@@ -74,6 +74,7 @@ const config = {
     })
   ],
   devServer: {
+<<<<<<< HEAD:webpack.config.js
     'static': {
       directory: './dist'
     }
@@ -81,6 +82,21 @@ const config = {
   resolve: {
     // Enable importing JS / JSX files without specifying their extension
     extensions: ['.js', '.jsx'],
+=======
+    static: {
+      directory: './dist',
+      publicPath: '/',
+    },
+    // open: true,
+    compress: true,
+    port: 8080,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        secure: false,
+      },
+    },
+>>>>>>> dev:web pack.config.js
   },
 };
 
