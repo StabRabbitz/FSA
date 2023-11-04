@@ -1,20 +1,19 @@
-
 const authcontroller = {}
 
 authcontroller.login = async (req, res, next) => {
-        console.log('login controller');
-        next();
-    },
+    console.log('login controller');
+    next();
+};
 
-    signup(req, res, next) {
-        console.log('signup controller');
-        next();
-    },
+authcontroller.signup = async (req, res, next) => {
+    console.log('signup controller');
+    next();
+};
 
-    isLoggedIn(req, res, next) {
-        console.log('isLoggedin controller');
-        next();
-    },
+authcontroller.isLoggedIn = async (req, res, next) => {
+    console.log('isLoggedin controller');
+    next();
+};
 
 
 
