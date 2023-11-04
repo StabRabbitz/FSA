@@ -2,13 +2,6 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-<<<<<<< HEAD
-const webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-=======
->>>>>>> main
 const config = {
   entry: [
     'react-hot-loader/patch',
