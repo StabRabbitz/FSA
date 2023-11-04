@@ -1,7 +1,7 @@
 
-const authcontroller = {
+const authcontroller = {}
 
-    login(req, res, next) {
+authcontroller.login = async (req, res, next) => {
         console.log('login controller');
         next();
     },
@@ -16,7 +16,6 @@ const authcontroller = {
         next();
     },
 
-}
 
 
 module.exports = authcontroller;
