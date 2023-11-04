@@ -8,7 +8,7 @@ const App = () => {
     //     <Route path="/" element={<Home />} />
     //   </Routes>
     <>
-        <h1 className="text-4xl text-white bg-black">
+        <h1 className="text-4xl text-pink-500 bg-black">
             FSA APP
         </h1>
         <Home />
