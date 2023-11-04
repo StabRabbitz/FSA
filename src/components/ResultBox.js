@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Button = () => {
+const ResultBox = () => {
     
 return (
-    <button>Button</button>
+    <div>Result Box</div>
 )
 }
 
 
-export default Button;
+export default ResultBox;
