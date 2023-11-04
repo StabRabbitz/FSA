@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Button = () => {
+const MiscInfo = () => {
     
 return (
-    <button>Button</button>
+    <div>MiscInfo</div>
 )
 }
 
 
-export default Button;
+export default MiscInfo;

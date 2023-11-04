@@ -13,10 +13,20 @@ const config = {
   },
   module: {
     rules: [
+      // {
+      //   test: /\.(js|jsx)$/,
+      //   use: 'babel-loader',
+      //   exclude: /node_modules/
+      // },
       {
-        test: /\.(js|jsx)$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
+        test: /\.jsx?/,
+        exclude: /node_modules/,
+        use: {
+            loader: 'babel-loader',
+            options: {
+                presets: ['@babel/preset-env', '@babel/preset-react']
+            }
+        }
       },
       {
         test: /\.css$/,
@@ -67,7 +77,11 @@ const config = {
     'static': {
       directory: './dist'
     }
-  }
+  },
+  resolve: {
+    // Enable importing JS / JSX files without specifying their extension
+    extensions: ['.js', '.jsx'],
+  },
 };
 
 module.exports = config;
