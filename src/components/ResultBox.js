@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const ResultBox = () => {
     
 return (
-    <div>ResultBox</div>
+    <div>Result Box</div>
 )
 }
 
