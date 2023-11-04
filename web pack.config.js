@@ -64,10 +64,20 @@ const config = {
     })
   ],
   devServer: {
-    'static': {
-      directory: './dist'
-    }
-  }
+    static: {
+      directory: './dist',
+      publicPath: '/',
+    },
+    // open: true,
+    compress: true,
+    port: 8080,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        secure: false,
+      },
+    },
+  },
 };
 
 module.exports = config;
