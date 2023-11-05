@@ -8,11 +8,14 @@ const App = () => {
     //     <Route path="/" element={<Home />} />
     //   </Routes>
     <>
-        <h1 className="text-4xl text-pink-500 bg-black">
-            FSA APP
-        </h1>
+        <header className="bg-blue-500 p-4">
+        <h1 className="text-4xl text-white text-center font-extrabold">FlexWise</h1>
+            <p className="text-1xl text-white text-center font-bold"> An FSA Optimizer</p>
+        </header> 
+        <main className="bg-gray-100 p-4">
         <Home />
-    </>
+        </main>
+  </>
     );
   };
 
