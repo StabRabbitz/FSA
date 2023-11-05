@@ -21,7 +21,10 @@ return (
             onChange={(e) => setExpense23(e.target.value)}
           />
         </div>
+
+        
         <button onClick={handleSubmit}>Submit</button>
+
     </div>
 )
 }

@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom';
 const SignIn = () => {
     const [userName, setUserName] = useState('');
     const handleSubmit = () => {
-        
+
     }
     return (
         // <div>Sign In</div>
         <div>
             <div>
-              <label> What were your total average medical expenses in 2023? : </label>
+              <label> User Name: </label>
               <input
                 type="text"
                 value={userName}

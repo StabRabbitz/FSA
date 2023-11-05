@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FormSimple from './FormSimple';
 import ResultBox from './ResultBox';
-import Button from './button';
+import Button from './Button';
 import MiscInfo from './MiscInfo';
 
 const Home = () => {
@@ -15,12 +15,13 @@ return (
             <FormSimple />
             <ResultBox />
         </div>
-        <div>LOG IN TO CALCULATE OPTIMAL CONTRIBUTION FOR YOU</div>
+        <div>Log in to calculate the optimal FSA contribution for you!</div>
         <div>
             <Button />
             <Button />
         </div>
         <MiscInfo />
+        
     </div>
 )
 }

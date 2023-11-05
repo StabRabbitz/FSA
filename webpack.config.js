@@ -32,7 +32,9 @@ const config = {
         test: /\.css$/,
         use: [
           'style-loader',
-          'css-loader'
+          'css-loader',
+          'postcss-loader'
+
         ],
         exclude: /\.module\.css$/
       },
@@ -46,7 +48,8 @@ const config = {
               importLoaders: 1,
               modules: true
             }
-          }
+          },
+          'postcss-loader'
         ],
         include: /\.module\.css$/
       },

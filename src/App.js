@@ -12,7 +12,6 @@ const App = () => {
             FSA APP
         </h1>
         <Home />
-
     </>
     );
   };
