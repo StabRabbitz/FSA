@@ -5,18 +5,18 @@ const databasecontroller = {
         console.log('getuser controller')
         try {
 
-        const { name } = req.body;
-        console.log('name ', name)
+        const userName = req.locals.user;
+        console.log('name ', userName)
 
-        if (!name) {
+        if (!userName) {
             return next({
                 status: 400,
                 error: 'Name parameter is required.'
             });
         }
 
-        const selectQuery = 'SELECT * FROM test_table WHERE name = $1';
-        const selectParams = [name];
+        const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
+        const selectParams = [userName];
 
         const result = await client.query(selectQuery, selectParams);
         console.log('result ', result)
@@ -42,10 +42,10 @@ const databasecontroller = {
 
     async makeuser(req, res, next) {
         try {
-            const { name, age, salary } = req.body;
+            const { username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3 } = req.body;
             
             // manage error for incomplete user creation 
-            if (!name || !age || !salary) {
+            if (!username || !age || !salary) {
                 next({
                     status: 400,
                     error: 'Name, age, and salary required.'
@@ -53,8 +53,8 @@ const databasecontroller = {
             }
 
             // create new user 
-            const insertQuery = `INSERT INTO test_table (name, age, salary) VALUES ($1, $2, $3)`;
-            const insertParams = [name, age, salary];
+            const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+            const insertParams = [username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3];
 
             const result = await client.query(insertQuery, insertParams);
             res.locals.message = 'User creation succesful.'
@@ -70,11 +70,11 @@ const databasecontroller = {
 
     async updateUser (req, res, next) {
         try{
-            const { name, age, salary } = req.body; 
+            const { username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3 } = req.body; 
 
             // can likely eliminate this interior get request once we have a locals chain after auth implementation
-            const selectQuery = 'SELECT * FROM test_table WHERE name = $1';
-            const selectParams = [name];
+            const selectQuery = 'SELECT * FROM fsa_app_db WHERE name = $1';
+            const selectParams = [username];
 
             const userResults = await client.query(selectQuery, selectParams);
 
@@ -90,21 +90,37 @@ const databasecontroller = {
             const currentUserID = currentUser.id;
             console.log('currentUserID ', currentUserID)
 
-            const updatedName = name || currentUser.name;
+            const updatedName = username || currentUser.username;
             const updatedAge = age || currentUser.age;
             const updatedSalary = salary || currentUser.salary;
-
+            const updatedTaxPercent = taxPercent || currentUser.taxPercent;
+            const updatedEmployerCont = employerCont || currentUser.employerCont;
+            const updatedMedCost1 = medCost1 || currentUser.medCost1;
+            const updatedMedCost2 = medCost2 || currentUser.medCost2;
+            const updatedMedCost3 = medCost3 || currentUser.medCost3;
+            
             const updateQuery = `
-                UPDATE test_table
-                SET name = $1, age = $2, salary = $3
-                WHERE id = $4
+                UPDATE fsa_app_db
+                SET username = $1, age = $2, salary = $3, taxPercent = $4, employerCont = $5, medCost1 = $6, medCost2 = $7, medCost3 = $8
+                WHERE id = $9
             `;
 
-            const updateParams = [updatedName, updatedAge, updatedSalary, currentUserID];
+            const calculations = {}
+
+            calculations.avgMedicalExpenses = (updatedMedCost1 + updatedMedCost2 + updatedMedCost3) / 3;
+            calculations.avgMedicalExpenses = calculations.avgMedicalExpenses.toFixed(2);
+            calculations.yearlyCont = calculations.avgMedicalExpenses - updatedEmployerCont;
+            calculations.monthlyCont = calculations.yearlyCont / 12; 
+            calculations.salaryAfterCont = updatedSalary - calculations.avgMedicalExpenses;
+
+            const updateParams = [updatedName, updatedAge, updatedSalary, updatedTaxPercent, updatedEmployerCont, updatedMedCost1, updatedMedCost2, updatedMedCost3, currentUserID];
 
             const result = await client.query(updateQuery, updateParams);
 
             res.locals.message = 'User updated successfully';
+            res.locals.updatedUser = result;
+            res.locals.calculations = calculations;
+
             return next();
 
         } catch (error) {
@@ -118,11 +134,11 @@ const databasecontroller = {
     async deleteuser(req, res, next) {
         try {
 
-        const { name, age, salary } = req.body; 
+        const username = res.locals.user; 
 
             // can likely eliminate this interior get request once we have a locals chain after auth implementation
-        const selectQuery = 'SELECT * FROM test_table WHERE name = $1';
-        const selectParams = [name];
+        const selectQuery = 'SELECT * FROM fsa_app_db WHERE name = $1';
+        const selectParams = [username];
 
         const userResults = await client.query(selectQuery, selectParams);
 
@@ -138,7 +154,7 @@ const databasecontroller = {
         const currentUserID = currentUser.id;
         console.log('currentUserID ', currentUserID)
 
-        const deleteQuery = 'DELETE FROM test_table WHERE id = $1';
+        const deleteQuery = 'DELETE FROM fsa_app_db WHERE id = $1';
         const deleteParams = [currentUserID];
         const deleteResult = await client.query(deleteQuery, deleteParams);
 
