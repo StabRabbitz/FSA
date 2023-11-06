@@ -14,29 +14,31 @@ const htmlDirectory = path.join(__dirname, 'public', 'index.html');
 app.use(express.json());
 app.use(cookieParser());
 
-// serve HTML directory at get
-app.get('/', (req, res) => {
+const apiRouter = express.Router();
+app.use('/api', apiRouter);
+
+// serve HTML directory at get // does this need router ?? 
+apiRouter.get('/', (req, res) => {
     return res.status(200).sendFile(htmlDirectory);
   });
 
 // no auth get request for managing basic estimate on landing page
-app.post('/estimate', estimateController.estimate, (req, res) => {
+apiRouter.post('/estimate', estimateController.estimate, (req, res) => {
   return res.status(200).json({ 
-    estimate: res.locals.estimate, 
-    difference: res.locals.difference});
+    moneyLost: res.locals.moneyLost,
+    lostTaxSavings: res.locals.lostTaxSavings});
 })
 // tested? [x]
 
 // log-in
-// John note: removing databasecontroller.getuser. Should this be a get request?
-app.post('/login', authcontroller.login, (req, res) => {
+apiRouter.post('/login', authcontroller.login, databasecontroller.getuser, (req, res) => {
   res.status(200).json(res.locals.user);
 });
 
 // tested? x 
 
 // sign-up
-app.post('/signup', authcontroller.signup, (req, res) => {
+apiRouter.post('/signup', authcontroller.signup, databasecontroller.makeuser, (req, res) => {
   return res.status(200).json(res.locals.message);
 });
 
@@ -44,27 +46,27 @@ app.post('/signup', authcontroller.signup, (req, res) => {
 
 
 // route for patching user info 
-app.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.updateUser, (req, res) => {
-  return res.status(200).json(res.locals.message);
+apiRouter.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.updateUser, (req, res) => {
+  return res.status(200).json(res.locals);
 });
 
 // ** John testing for authcontroller.isLoggedIn
 app.get('/isLoggedIn', authcontroller.isLoggedIn, (req, res) => res.sendStatus(200))
 
 // auto-trigger this when userInfo is updated // updates widget
-app.get('/updatedQuote', (req, res) => {
+apiRouter.get('/updatedQuote', (req, res) => {
 
 });
 
 // need to look at locals id persistence once auth is in place 
 
-app.delete('/deleteuser', authcontroller.isLoggedIn, databasecontroller.deleteuser, (req, res) => {
+apiRouter.delete('/deleteuser', authcontroller.isLoggedIn, databasecontroller.deleteuser, (req, res) => {
   return res.status(200).json(res.locals.message);
 });
 
 // tested x 
 
-// global error handler 
+// global error handler // does the router 
 app.use((err, req, res, next) => {
     const defaultErr = {
       log: 'Express error handler caught unknown middleware error',
