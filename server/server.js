@@ -7,10 +7,11 @@ const estimateController = require('./controllers/estimatecontroller.js');
 const dbcontroller = require('./controllers/databasecontroller.js');
 const authcontroller = require('./controllers/authcontroller.js');
 const databasecontroller = require('./controllers/databasecontroller.js');
+const cors = require('cors');
 
 const htmlDirectory = path.join(__dirname, 'public', 'index.html');
 // Do we need a CSS directory? 
-
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -28,10 +29,23 @@ app.post('/estimate', estimateController.estimate, (req, res) => {
 // tested? [x]
 
 // log-in
+const apiRouter = express.Router();
+app.use('/api', apiRouter);
+
 // John note: removing databasecontroller.getuser. Should this be a get request?
-app.post('/login', authcontroller.login, (req, res) => {
+apiRouter.post('/login', authcontroller.login, (req, res) => {
   res.status(200).json(res.locals.user);
 });
+
+// TEST ROUTE
+
+// apiRouter.get('api/test', (req, res) => res.status(200).send('Succees from TEST GET request'));
+apiRouter.get('/test', (req, res) => {
+  console.log('Test route worked');
+  return res.status(200).json({message: 'Succees from TEST GET request'})
+
+});
+
 
 // tested? x 
 
@@ -41,7 +55,7 @@ app.post('/signup', authcontroller.signup, (req, res) => {
 });
 
 // tested? x
-
+   
 
 // route for patching user info 
 app.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.updateUser, (req, res) => {

@@ -5,33 +5,43 @@ const SignIn = () => {
   const [form, setForm] = useState('');
   const navigate = useNavigate();
 
+  // const testFunc = () => {
+  //   fetch('api/test') // expect request to localhost 8080 /api/test -> then proxy knows to route to server at localhost 3000
+  //     .then(res => res.json())
+  //     .then(data => console.log(data))
+  //     .catch(e => console.log(e));
+  // };
+  // testFunc();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted!');
-    const email = e.target.querySelector('#email').value;
+    const username = e.target.querySelector('#email').value;
     const password = e.target.querySelector('#password').value;
-    e.target.reset();
-    navigate('/signedIn');
-    fetch('/login', {
+    console.log(username, password)
+    // e.target.reset();
+    
+    fetch('api/login', {
       method: 'POST',
-      body: {
-        email,
+      body: JSON.stringify({
+        username,
         password
-      },
+      }),
       headers: {
         'Content-Type': 'application/json',
       },
     })
     .then((res) => {
       // if (!res.ok) {
-      //   // promise.reject('Not okay')
-
+        // promise.reject('Bad status')
       // }
-      res.json()
+      return res.json()
     })
     .then((credentials) => {
       console.log(credentials);
+      navigate('/signedIn');
     })
+    .catch( e => console.log(e));
     //invoke function to make a request to server
       //if status return not 200, show err
       //if success use route to signedIn nativate('/signedIn')
