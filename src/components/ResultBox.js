@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const ResultBox = () => {
-    fetch('api/')
+    fetch('api/estimate')
       .then(res => res.json())
       .then(data => console.log(data))
       .catch(e => console.log(e));

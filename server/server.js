@@ -37,15 +37,6 @@ apiRouter.post('/login', authcontroller.login, (req, res) => {
   res.status(200).json(res.locals.user);
 });
 
-// TEST ROUTE
-
-// apiRouter.get('api/test', (req, res) => res.status(200).send('Succees from TEST GET request'));
-apiRouter.get('/test', (req, res) => {
-  console.log('Test route worked');
-  return res.status(200).json({message: 'Succees from TEST GET request'})
-
-});
-
 
 // tested? x 
 
