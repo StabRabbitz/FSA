@@ -29,7 +29,7 @@ app.get('/login', authcontroller.login, databasecontroller.getuser, (req, res) =
 
 // sign-up
 app.post('/signup', authcontroller.signup, (req, res) => {
-
+  return res.sendStatus(200);
 });
 
 app.post('/defineuser', authcontroller.isLoggedIn, (req, res) => {
