@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 const MiscInfo = () => {
     
 return (
-    <div>
+    <div class = "text-center">
+        <div class = "mx-auto max-w-md"></div>
         <div>MiscInfo</div>
         <div>
             FSA Plan goes through employer
