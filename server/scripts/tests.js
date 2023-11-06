@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -22,4 +23,26 @@ function createToken(id) {
 
 */
 
-console.log(process.env.JWT_SECRET);
+async function verifyToken() {
+  try {
+    // get from cookies
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // The token is valid. You can use the payload here.
+  } catch (error) {
+    // The token is not valid. Handle the error here.
+  }
+}
+
+const SALT_WORK_FACTOR = 10;
+function hashPassword(password) {
+  bcrypt.hash(password, SALT_WORK_FACTOR, (err, hash) => {
+      if (err) return next({
+          log: `Error hashing password`,
+          status: 500,
+          message: { err: `Error in signup`},
+      });
+      return hash;        
+  })
+}
+
+console.log(hashPassword('hey'));

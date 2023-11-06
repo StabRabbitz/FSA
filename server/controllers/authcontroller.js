@@ -14,13 +14,31 @@ const pool = new Pool({
 
 // test();
 
+const SALT_WORK_FACTOR = 10;
+
 const authcontroller = {}
 
 // helper function to create a jwt
-function createToken(userObj) {
+function createToken(id) {
     // jwt sign method takes in user
-    return jwt.sign(userObj);
+    return jwt.sign({ id }, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION});
 }
+
+function hashPassword(password) {
+    return new Promise((resolve, reject) => {
+      bcrypt.hash(password, SALT_WORK_FACTOR, (err, hash) => {
+        if (err) {
+          reject({
+            log: `Error hashing password`,
+            status: 500,
+            message: { err: `Error in signup`},
+          });
+        } else {
+          resolve(hash);
+        }
+      });
+    });
+  }
 
 // sign up controller
 authcontroller.signup = async (req, res, next) => {
@@ -28,7 +46,7 @@ authcontroller.signup = async (req, res, next) => {
     try {
         // get username and password from req. If don't exist, invoke global error handler
         const {username, password} = req.body;
-        if (!username || !password) next({
+        if (!username || !password) return next({
             log: 'Username or password not submitted', 
             status: 422,
             message: { err: 'Username or password not submitted' },
@@ -42,13 +60,14 @@ authcontroller.signup = async (req, res, next) => {
             where fad.username = $1
         `
         const userDetails = await pool.query(selectQuery, selectValues);
-        if (userDetails.rowCount > 0) next({
+        if (userDetails.rowCount > 0) return next({
             log: 'Username already exists',
             status: 409,
             message: { err: 'Username already exists' },
         })
         // create new user with hashed password
-        // *** password isn't hashed right now
+        const hashedPassword = await hashPassword(password);
+        console.log(hashedPassword);
         const insertQuery = `
             insert into fsa_app_db (
                 username
@@ -59,17 +78,17 @@ authcontroller.signup = async (req, res, next) => {
                 ,$2
             )
         `
-        const insertValues = [username, password]
+        const insertValues = [username, hashedPassword]
         const newUser = await pool.query(insertQuery, insertValues);
         // handle errors on insert
-        if (newUser.rowCount === 0) next({
+        if (newUser.rowCount === 0) return next({
             log: `Failed to insert user into db`,
             status: 500,
             message: { err: `Error in signup`},
         })
 
         // **** attach jwt to cookies
-        // const token = createToken(); // what do I pass in here
+        // const token = createToken(); // need to pass in primary key id
         // res.cookie('token', token, {
         //     httpOnly: true,
         //     secure: true
