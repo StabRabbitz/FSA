@@ -7,27 +7,30 @@ import MiscInfo from './MiscInfo';
 import SignIn from './SignIn';
 
 const Home = () => {
-  return (
-    <div>
-      <h2>Are you Properly Contributing to your FSA?</h2>
-      <p>
-        {' '}
-        This FSA Calculator will help you estimate your health spending for the
-        year so you can make an informed decision and take maximum advantage of
-        your FSA.{' '}
-      </p>
-      <small>
-        Your privacy is important to us, the information you input throughout
-        this tool will not be shared with any third party.
-      </small>
 
-      <div>
+
+  return (
+
+    <div>
+      <div className=''>
+          <h2 className='max-w-2xl mx-auto text-center mt-3 mb-5 text-xl font-semibold'>Are you Properly Contributing to your Flexible Spending Account (FSA)?</h2>
+          <p className=' mx-auto text-center text-lg mb-3'>
+            Fill out the information below so that you can make an informed decision and take maximum advantage of
+            your FSA.
+          </p>
+          <p className='mx-auto text-center text-sm text-gray-700 mb-5'>
+            Your privacy is important to us, the information you input will not be shared with any third party.
+          </p>
+      </div>
+
+      <div className='flex justify-center'>
         <FormSimple />
         <ResultBox />
       </div>
 
       <SignIn />
       <MiscInfo />
+
     </div>
   );
 };
