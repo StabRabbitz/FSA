@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const path = require('path');
 const PORT = 3000;
@@ -11,6 +12,7 @@ const htmlDirectory = path.join(__dirname, 'public', 'index.html');
 // Do we need a CSS directory? 
 
 app.use(express.json());
+app.use(cookieParser());
 
 // serve HTML directory at get
 app.get('/', (req, res) => {
