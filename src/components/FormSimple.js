@@ -41,30 +41,33 @@ const FormSimple = () => {
     <div>
       <form className="bg-white p-8 rounded shadow-md w-full sm:w-96">
         <label className="text-lg font-semibold text-gray-700">
-          What were your total average medical expenses in 2023? :
+          What were your average medical expenses in 2023?
         </label>
         <input
           type="text"
           className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
           name="expense23"
+          placeholder='$'
           onChange={handleChange}
         />
         <label className="text-lg font-semibold text-gray-700">
-          What were your total average medical expenses in 2022? :
+          What were your medical expenses in 2022?
         </label>
         <input
           type="text"
           className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
           name="expense22"
+          placeholder='$'
           onChange={handleChange}
         />
         <label className="text-lg font-semibold text-gray-700">
-          What were your total average medical expenses in 2021? :
+          What were your average medical expenses in 2021?
         </label>
         <input
           type="text"
           className="w-full border rounded p-2 mt-2 mb-3 focus:outline-none focus:border-blue-500"
           name="expense21"
+          placeholder='$'
           onChange={handleChange}
         />
         <button

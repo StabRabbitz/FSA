@@ -14,7 +14,7 @@ const Home = () => {
     <div>
       <div className='mt-10'>
           <h2 className='max-w-3xl mx-auto text-center mt-3 mb-5 text-xl font-semibold'>
-            Are you Properly Contributing to your Flexible Spending Account (FSA)?
+            Are You Properly Contributing to your Flexible Spending Account (FSA)?
           </h2>
           <p className=' max-w-3xl mx-auto text-center text-lg mb-3'>
             Fill out the information below so that you can make an informed decision and take maximum advantage of

@@ -5,7 +5,7 @@ const ResultBox = () => {
     
 return (
     <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
-        <div>Result Box</div>
+        <div className='max-w-3xl mx-auto text-center mt-3 mb-5 text-xl font-semibold'>Results:</div>
     </div>
 )
 }

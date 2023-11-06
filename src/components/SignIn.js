@@ -1,23 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
   const [form, setForm] = useState('');
-  const handleSubmit = () => {
+  const navigate = useNavigate();
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitted!');
+    const email = e.target.querySelector('#email').value;
+    const password = e.target.querySelector('#password').value;
+    e.target.reset();
+    navigate('/signedIn');
+    fetch('/login', {
+      method: 'POST',
+      body: {
+        email,
+        password
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((res) => res.json())
+    .then((credentials) => {
+      console.log(credentials);
+    })
+    //invoke function to make a request to server
+      //if status return not 200, show err
+      //if success use route to signedIn nativate('/signedIn')
   };
 
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6  lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8 mt-14">
+        <div className="">
           <h2 className="mt-10 text-center text-2xl font-bold text-gray-800">
             Sign in to calculate the optimal FSA contribution for you!
           </h2>
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" action="#" method="POST">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-2xl">
+          <form className="space-y-6" action="#" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="email"
