@@ -18,37 +18,47 @@ app.get('/', (req, res) => {
   });
 
 // no auth get request for managing basic estimate on landing page
-app.get('/estimate', estimateController.estimate, (req, res) => {
-
+app.post('/estimate', estimateController.estimate, (req, res) => {
+  return res.status(200).json({ 
+    estimate: res.locals.estimate, 
+    difference: res.locals.difference});
 })
+// tested? [x]
 
 // log-in
-app.get('/login', authcontroller.login, databasecontroller.getuser, (req, res) => {
-
+app.post('/login', authcontroller.login, databasecontroller.getuser, (req, res) => {
+  res.status(200).json(res.locals.user);
 });
+
+// tested? x 
 
 // sign-up
-app.post('/signup', authcontroller.signup, (req, res) => {
-
+app.post('/signup', authcontroller.signup, databasecontroller.makeuser, (req, res) => {
+  return res.status(200).json(res.locals.message);
 });
 
-app.post('/defineuser', authcontroller.isLoggedIn, (req, res) => {
+// tested? x
 
-});
 
 // route for patching user info 
-app.patch('/updateuser', authcontroller.isLoggedIn, (req, res) => {
-
+app.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.updateUser, (req, res) => {
+  return res.status(200).json(res.locals.message);
 });
+
+// tested x 
 
 // auto-trigger this when userInfo is updated // updates widget
 app.get('/updatedQuote', (req, res) => {
 
 });
 
-app.delete('/deleteuser', authcontroller.isLoggedIn, (req, res) => {
+// need to look at locals id persistence once auth is in place 
 
+app.delete('/deleteuser', authcontroller.isLoggedIn, databasecontroller.deleteuser, (req, res) => {
+  return res.status(200).json(res.locals.message);
 });
+
+// tested x 
 
 // global error handler 
 app.use((err, req, res, next) => {
@@ -61,6 +71,8 @@ app.use((err, req, res, next) => {
     console.log(errorObj.log);
     return res.status(errorObj.status).json(errorObj.message);
   });
+
+  // tested x 
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
