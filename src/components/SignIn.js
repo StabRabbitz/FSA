@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const SignIn = () => {
-  const [userName, setUserName] = useState('');
-  const handleSubmit = () => {};
+  const [form, setForm] = useState('');
+  const handleSubmit = () => {
+
+  };
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6  lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <h2 className="mt-10 text-center text-2xl font-bold text-gray-800">
             Sign in to calculate the optimal FSA contribution for you!
           </h2>
         </div>
