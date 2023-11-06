@@ -4,6 +4,8 @@ import FormSimple from './FormSimple';
 import ResultBox from './ResultBox';
 import Button from './button';
 import MiscInfo from './MiscInfo';
+import Login from './Login';
+import Signup from './Signup';
 
 const Home = () => {
 
@@ -21,6 +23,12 @@ return (
             <Button />
         </div>
         <MiscInfo />
+
+        <h1>JOHN CHANGES</h1>
+        <Signup/>
+        <Login/>
+        <h1>Test</h1>
+        <Link to="/protected">Protected Test</Link>
     </div>
 )
 }

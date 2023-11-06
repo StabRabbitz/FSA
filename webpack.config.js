@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const config = {
   entry: [
-    'react-hot-loader/patch',
+    // 'react-hot-loader/patch',
     './src/index.js'
   ],
   output: {
@@ -81,6 +81,10 @@ const config = {
     // open: true,
     compress: true,
     port: 8080,
+    // enable HMR on the devServer
+    hot: true,
+    // fallback to root for other urls. Best practice if you need client side routing
+    historyApiFallback: true,
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
