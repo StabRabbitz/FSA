@@ -22,7 +22,13 @@ const SignIn = () => {
         'Content-Type': 'application/json',
       },
     })
-    .then((res) => res.json())
+    .then((res) => {
+      // if (!res.ok) {
+      //   // promise.reject('Not okay')
+
+      // }
+      res.json()
+    })
     .then((credentials) => {
       console.log(credentials);
     })
