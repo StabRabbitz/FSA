@@ -122,7 +122,6 @@ authcontroller.signup = async (req, res, next) => {
 
 authcontroller.login = async (req, res, next) => {
     console.log('login controller invoked');
-
     try {
         // get username and password from req.body
         const { username, password } = req.body;

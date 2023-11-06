@@ -1,20 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
-  const [userName, setUserName] = useState('');
-  const handleSubmit = () => {};
+  const [form, setForm] = useState('');
+  const navigate = useNavigate();
+
+  // const testFunc = () => {
+  //   fetch('api/test') // expect request to localhost 8080 /api/test -> then proxy knows to route to server at localhost 3000
+  //     .then(res => res.json())
+  //     .then(data => console.log(data))
+  //     .catch(e => console.log(e));
+  // };
+  // testFunc();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitted!');
+    const username = e.target.querySelector('#email').value;
+    const password = e.target.querySelector('#password').value;
+    console.log(username, password)
+    // e.target.reset();
+    
+    fetch('api/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        username,
+        password
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((res) => {
+      // if (!res.ok) {
+        // promise.reject('Bad status')
+      // }
+      return res.json()
+    })
+    .then((credentials) => {
+      console.log(credentials);
+      navigate('/signedIn');
+    })
+    .catch( e => console.log(e));
+  };
+
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6  lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8 mt-14">
+        <div className="">
+          <h2 className="mt-10 text-center text-2xl font-bold text-gray-800">
             Sign in to calculate the optimal FSA contribution for you!
           </h2>
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" action="#" method="POST">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-2xl">
+          <form className="space-y-6" action="#" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="email"

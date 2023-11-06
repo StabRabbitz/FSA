@@ -7,10 +7,11 @@ const estimateController = require('./controllers/estimatecontroller.js');
 const dbcontroller = require('./controllers/databasecontroller.js');
 const authcontroller = require('./controllers/authcontroller.js');
 const databasecontroller = require('./controllers/databasecontroller.js');
+const cors = require('cors');
 
 const htmlDirectory = path.join(__dirname, 'public', 'index.html');
 // Do we need a CSS directory? 
-
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -35,6 +36,7 @@ apiRouter.post('/login', authcontroller.login, databasecontroller.getuser, (req,
   res.status(200).json(res.locals.user);
 });
 
+
 // tested? x 
 
 // sign-up
@@ -43,7 +45,7 @@ apiRouter.post('/signup', authcontroller.signup, databasecontroller.makeuser, (r
 });
 
 // tested? x
-
+   
 
 // route for patching user info 
 apiRouter.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.updateUser, (req, res) => {
