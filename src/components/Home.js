@@ -27,8 +27,9 @@ return (
         <h1>JOHN CHANGES</h1>
         <Signup/>
         <Login/>
-        <h1>Test</h1>
         <Link to="/protected">Protected Test</Link>
+        <h1>Test</h1>
+        <h3>hello</h3>
     </div>
 )
 }
