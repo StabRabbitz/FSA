@@ -42,9 +42,6 @@ const SignIn = () => {
       navigate('/signedIn');
     })
     .catch( e => console.log(e));
-    //invoke function to make a request to server
-      //if status return not 200, show err
-      //if success use route to signedIn nativate('/signedIn')
   };
 
   return (
