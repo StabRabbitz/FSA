@@ -28,14 +28,15 @@ app.post('/estimate', estimateController.estimate, (req, res) => {
 // tested? [x]
 
 // log-in
-app.post('/login', authcontroller.login, databasecontroller.getuser, (req, res) => {
+// John note: removing databasecontroller.getuser. Should this be a get request?
+app.post('/login', authcontroller.login, (req, res) => {
   res.status(200).json(res.locals.user);
 });
 
 // tested? x 
 
 // sign-up
-app.post('/signup', authcontroller.signup, databasecontroller.makeuser, (req, res) => {
+app.post('/signup', authcontroller.signup, (req, res) => {
   return res.status(200).json(res.locals.message);
 });
 
@@ -47,7 +48,8 @@ app.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.updateUse
   return res.status(200).json(res.locals.message);
 });
 
-// tested x 
+// ** John testing for authcontroller.isLoggedIn
+app.get('/isLoggedIn', authcontroller.isLoggedIn, (req, res) => res.sendStatus(200))
 
 // auto-trigger this when userInfo is updated // updates widget
 app.get('/updatedQuote', (req, res) => {

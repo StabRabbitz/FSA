@@ -20,7 +20,13 @@ const authcontroller = {}
 
 // helper function to create a jwt
 function createToken(id) {
-    // jwt sign method takes in user
+    // jwt sign takes in:
+    // payload - obj: use primary key value
+    // secret key: string stored in .env
+    // options - includes:
+      // algorithm (defaults to HS256)
+      // expiresIn (seconds?)
+    // callback
     return jwt.sign({ id }, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION});
 }
 
@@ -65,6 +71,7 @@ authcontroller.signup = async (req, res, next) => {
             status: 409,
             message: { err: 'Username already exists' },
         })
+
         // create new user with hashed password
         const hashedPassword = await hashPassword(password);
         console.log(hashedPassword);
@@ -77,6 +84,7 @@ authcontroller.signup = async (req, res, next) => {
                 $1
                 ,$2
             )
+            RETURNING id
         `
         const insertValues = [username, hashedPassword]
         const newUser = await pool.query(insertQuery, insertValues);
@@ -86,16 +94,19 @@ authcontroller.signup = async (req, res, next) => {
             status: 500,
             message: { err: `Error in signup`},
         })
+        // get id of newly inserted row
+        const userId = newUser.rows[0].id
 
-        // **** attach jwt to cookies
-        // const token = createToken(); // need to pass in primary key id
-        // res.cookie('token', token, {
-        //     httpOnly: true,
-        //     secure: true
-        // })
+        // create jwt and attache as a cookie
+        const token = createToken(userId); // pass in primary key id
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true
+            // ***** might need updates so it doesn't expire after session
+        })
 
-        // add username to res.locals and invoke next
-        res.locals.username = username;
+        // add message to res.locals and invoke next
+        res.locals.message = 'Success!'
         next();
     }
     catch (error) {
@@ -111,14 +122,88 @@ authcontroller.signup = async (req, res, next) => {
 
 authcontroller.login = async (req, res, next) => {
     console.log('login controller invoked');
-    next();
+
+    try {
+        // get username and password from req.body
+        const { username, password } = req.body;
+
+        // find username in DB
+        const queryToFindUser = `
+            select
+                 fad.id
+                ,fad.hashpassword
+            from fsa_app_db fad
+            where fad.username = $1
+        `
+        const values = [username]
+        const userDetails = await pool.query(queryToFindUser, values)
+        // invoke global error handler if user doesn't exist
+        if (userDetails.rowCount !== 1) {
+            // invoke bcrypt compare on something random to ensure the failure time is the same. Not sure what is best practice here
+            const result = await bcrypt.compare('something', 'randomString');
+            // then throw error
+            return next({
+                log: `Express error handler caught middleware error in authcontroller.login. Singular username not found`,
+                status: 500,
+                message: { err: `Username/Password combo is not correct`},
+            })
+        }
+
+        // decrypt and throw error if returns false, meaning there is no match
+        console.log('DB password: ', userDetails.rows[0].hashpassword);
+        console.log('Req password', password);
+        const result = await bcrypt.compare(password, userDetails.rows[0].hashpassword);
+        console.log(result);
+        if (!result) return next({
+            log: `Express error handler caught middleware error in authcontroller.login. Password did not match`,
+            status: 500,
+            message: { err: `Username/Password combo is not correct`},
+        });
+
+        // get id of user
+        const userId = userDetails.rows[0].id
+
+        // create jwt and attache as a cookie
+        const token = createToken(userId); // pass in primary key id
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true
+            // ***** might need updates so it doesn't expire after session
+        })
+
+        // add username to res.locals and invoke next
+        res.locals.user = username;
+        next();
+    } catch (error) {
+        // Invoke global err handler
+        next({
+            log: `Express error handler caught middleware error in authcontroller.login. Error: ${error}`,
+            status: 500,
+            message: { err: `Username/Password combo is not correct`},
+        })
+}
 };
 
 
 
 authcontroller.isLoggedIn = async (req, res, next) => {
     console.log('isLoggedin controller invoked');
-    next();
+    try {
+        // get from cookies and check with jwt's built in verify method
+        const { token } = req.cookies;
+        console.log(token);
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
+        // throws an error if can't verify
+        next();
+      } catch (error) {
+        // Invoke global err handler
+        next({
+            log: `Express error handler caught middleware error in authcontroller.isLoggedIn. Error: ${error}`,
+            status: 500,
+            message: { err: `Error in checking if logged in: ${error}`},
+        })
+      }
+    
 };
 
 
