@@ -205,7 +205,6 @@ authcontroller.isLoggedIn = async (req, res, next) => {
             message: { err: `Error in checking if logged in: ${error}`},
         })
       }
-    
 };
 
 

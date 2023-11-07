@@ -7,36 +7,31 @@ const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect( () => {
-    const checkAuth = async () => {
-      fetch('/isLoggedIn')
-      .then(res => {
-        if (!res.ok) { // replace does this thing where 
-          alert('Not allowed!')
-            setAuthenticated(false); 
-            setIsLoading(false);
-        }
+  const checkAuth = async () => {
+    console.log('Checking auth');
+    try {
+      const response = await fetch('/api/isLoggedIn');
+      console.log(response);
+      if (response.ok) {
         setAuthenticated(true);
-        setIsLoading(false);
-        return res.json()
-      })
-      .then(data => console.log(data))
-      .catch(err => {
-        console.log(err);
-        setAuthenticated(false); 
-        setIsLoading(false);
-
-      })
+      }
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
     }
-    checkAuth();
-  }, [Navigate]);
+  }
 
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  // show something in case request takes a while
   if (isLoading) {
-    return <div>Loading...</div>; // or some loading spinner
+    return <div>Loading...</div>;
   }
   // children automatically passed as props? replace is for history??
   // I think it's returning before the 
-  return isAuthenticated ? children : <Navigate to='/' replace/> 
+  return isAuthenticated ? children : <Navigate to='/' replace />
 }
 
 export default ProtectedRoute;

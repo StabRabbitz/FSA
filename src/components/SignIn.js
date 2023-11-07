@@ -5,43 +5,33 @@ const SignIn = () => {
   const [form, setForm] = useState('');
   const navigate = useNavigate();
 
-  // const testFunc = () => {
-  //   fetch('api/test') // expect request to localhost 8080 /api/test -> then proxy knows to route to server at localhost 3000
-  //     .then(res => res.json())
-  //     .then(data => console.log(data))
-  //     .catch(e => console.log(e));
-  // };
-  // testFunc();
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted!');
     const username = e.target.querySelector('#email').value;
     const password = e.target.querySelector('#password').value;
-    console.log(username, password)
-    // e.target.reset();
-    
-    fetch('api/login', {
-      method: 'POST',
-      body: JSON.stringify({
-        username,
-        password
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then((res) => {
-      // if (!res.ok) {
-        // promise.reject('Bad status')
-      // }
-      return res.json()
-    })
-    .then((credentials) => {
-      console.log(credentials);
-      navigate('/signedIn');
-    })
-    .catch( e => console.log(e));
+    try {
+      const response = await fetch('api/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          username,
+          password
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok){
+        navigate('/signedIn');
+        e.target.reset();
+      } else {
+        alert('Incorrect password/username combo');
+      }
+      
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

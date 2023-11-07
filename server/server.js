@@ -19,9 +19,10 @@ const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
 // serve HTML directory at get // does this need router ?? 
-apiRouter.get('/', (req, res) => {
-    return res.status(200).sendFile(htmlDirectory);
-  });
+// Had to comment this out because it's too specific and messing up other get requests
+// apiRouter.get('/', (req, res) => {
+//     return res.status(200).sendFile(htmlDirectory);
+//   });
 
 // no auth get request for managing basic estimate on landing page
 apiRouter.post('/estimate', estimateController.estimate, (req, res) => {
@@ -32,8 +33,9 @@ apiRouter.post('/estimate', estimateController.estimate, (req, res) => {
 // tested? [x]
 
 // log-in
-apiRouter.post('/login', authcontroller.login, databasecontroller.getuser, (req, res) => {
-  res.status(200).json(res.locals.user);
+// removing databasecontroller.getuser for testing
+apiRouter.post('/login', authcontroller.login, (req, res) => {
+  res.status(200).json({message: 'Success'});
 });
 
 
@@ -53,7 +55,10 @@ apiRouter.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.upd
 });
 
 // Gets called on every protected route
-apiRouter.get('/isLoggedIn', authcontroller.isLoggedIn, (req, res) => res.status(200).json({message: 'Success!'}))
+apiRouter.get('/isLoggedIn', authcontroller.isLoggedIn, (req, res) =>{
+  console.log('isLoggedIn CB');
+  res.status(200).json({message: 'Success!'})
+})
 
 // auto-trigger this when userInfo is updated // updates widget
 apiRouter.get('/updatedQuote', (req, res) => {
