@@ -124,7 +124,7 @@ const FormComplex = () => {
             Submit
           </button>
         </form>
-        <ResultBox />
+        {/* <ResultBoxComplex /> */}
       </div>
     </div>
   );

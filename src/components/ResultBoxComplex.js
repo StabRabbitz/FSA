@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const ResultBox = ({ serverResponse, setServerResponse }) => {
+const ResultBoxComplex = ({ serverResponse, setServerResponse }) => {
     // fetch('api/')
     //   .then(res => res.json())
     //   .then(data => console.log(data))
@@ -35,4 +35,4 @@ return (
 )
 };
 
-export default ResultBox;
+export default ResultBoxComplex;
