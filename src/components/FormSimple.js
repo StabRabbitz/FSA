@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 
-const FormSimple = () => {
+const FormSimple = ( {serverResponse, setServerResponse} ) => {
   const [form, setForm] = useState({
     expense23: '',
     expense22: '',
@@ -15,13 +15,15 @@ const FormSimple = () => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const data = {
-      expense23,
-      expense22,
-      expense21,
+      expense23: form.expense23,
+      expense22: form.expense22,
+      expense21: form.expense21,
     };
-    fetch('http://localhost:3000/', {
+    console.log('DATA', data);
+    fetch('api/estimate', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -31,6 +33,7 @@ const FormSimple = () => {
       .then((res) => res.json())
       .then((expenses) => {
         console.log(expenses);
+        setServerResponse([expenses.moneyLost, expenses.lostTaxSavings]);
       })
       .catch((err) => {
         console.log(err);

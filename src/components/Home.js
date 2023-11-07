@@ -7,7 +7,7 @@ import MiscInfo from './MiscInfo';
 import SignIn from './SignIn';
 
 const Home = () => {
-
+  const [serverResponse, setServerResponse] = useState([]);
 
   return (
 
@@ -26,8 +26,8 @@ const Home = () => {
       </div>
 
       <div className='flex justify-center'>
-        <FormSimple />
-        <ResultBox />
+        <FormSimple serverResponse={serverResponse} setServerResponse={setServerResponse} />
+        <ResultBox serverResponse={serverResponse} setServerResponse={setServerResponse} />
       </div>
 
       <SignIn />
