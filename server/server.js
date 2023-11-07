@@ -38,7 +38,7 @@ apiRouter.post('/login', authcontroller.login, databasecontroller.getuser, (req,
 
 
 // tested? x 
-
+apiRouter.get('/estimate', (req, res) => res.sendStatus(200))
 // sign-up
 apiRouter.post('/signup', authcontroller.signup, databasecontroller.makeuser, (req, res) => {
   return res.status(200).json(res.locals.message);
@@ -52,8 +52,8 @@ apiRouter.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.upd
   return res.status(200).json(res.locals);
 });
 
-// ** John testing for authcontroller.isLoggedIn
-app.get('/isLoggedIn', authcontroller.isLoggedIn, (req, res) => res.sendStatus(200))
+// Gets called on every protected route
+apiRouter.get('/isLoggedIn', authcontroller.isLoggedIn, (req, res) => res.status(200).json({message: 'Success!'}))
 
 // auto-trigger this when userInfo is updated // updates widget
 apiRouter.get('/updatedQuote', (req, res) => {

@@ -58,7 +58,7 @@ authcontroller.signup = async (req, res, next) => {
             message: { err: 'Username or password not submitted' },
         })
         
-        // if user already exists, send message back
+        // if user already exists, invoke global error handler
         const selectValues = [username];
         const selectQuery = `
             select 1
@@ -126,6 +126,8 @@ authcontroller.login = async (req, res, next) => {
         // get username and password from req.body
         const { username, password } = req.body;
 
+        // should also for scenario where username/password don't exist
+
         // find username in DB
         const queryToFindUser = `
             select
@@ -189,6 +191,7 @@ authcontroller.isLoggedIn = async (req, res, next) => {
     console.log('isLoggedin controller invoked');
     try {
         // get from cookies and check with jwt's built in verify method
+        // not sure if I need the userId which is the payload
         const { token } = req.cookies;
         console.log(token);
         const payload = jwt.verify(token, process.env.JWT_SECRET);
