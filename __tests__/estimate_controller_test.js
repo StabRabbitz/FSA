@@ -44,7 +44,7 @@ describe('estimate controller tests', () => {
         expect(calculatedMoneyLost).toEqual(moneyLost);
     })
 
-    xit('make sure losttaxsavings is calculated correctly', () => {
+    it('make sure losttaxsavings is calculated correctly', async() => {
         const req = {
             body: {
                 expense23: 1200,
@@ -52,27 +52,38 @@ describe('estimate controller tests', () => {
                 expense21: 1500
             }
         }
+        const res = {
+            locals: {}
+        }
+        const next = () => {
+            return res.locals.lostTaxSavings;
+        }
+        const userAvg = ((req.body.expense21 + req.body.expense22 + req.body.expense23) / 3).toFixed(2);
+        const avgTax = .25; 
+        const lostTaxSavings = (userAvg * avgTax).toFixed(2);
+        const calculatedLostTaxSavings = await estimatecontroller.estimate(req, res, next);
+        expect(calculatedLostTaxSavings).toEqual(lostTaxSavings);
         
     })
     
-    xit('make sure it calculates based off only one input', () => {
+    it('make sure it calculates based off less than three inputs', async () => {
         const req = {
             body: {
-                expense23: 0,
-                expense22: 0,
+                expense23: NaN,
+                expense22: 1500,
                 expense21: 1000
             }
         }
-    })
-    
-    xit('make sure it calculates based off only two input', () => {
-        const req = {
-            body: {
-                expense23: 0,
-                expense22: 1000,
-                expense21: 1000
-            }
+        const res = {
+            locals: {}
         }
+        const next = () => {
+            return res.locals.userAvg;
+        }
+        
+        const userAvg = ((req.body.expense21 + req.body.expense22) / 2).toFixed(2); //1250.00
+        const calculatedUserAvg = await estimatecontroller.estimate(req, res, next);
+        expect(calculatedUserAvg).toEqual(userAvg);
     })
 });
 
