@@ -1,0 +1,1 @@
+const authcontroller = require('../server/controllers/authcontroller');
