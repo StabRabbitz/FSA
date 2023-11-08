@@ -47,7 +47,8 @@ const FormSimple = ( {serverResponse, setServerResponse} ) => {
           What were your average medical expenses in 2023?
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
           name="expense23"
           placeholder='$'
@@ -57,7 +58,8 @@ const FormSimple = ( {serverResponse, setServerResponse} ) => {
           What were your medical expenses in 2022?
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
           name="expense22"
           placeholder='$'
@@ -67,7 +69,8 @@ const FormSimple = ( {serverResponse, setServerResponse} ) => {
           What were your average medical expenses in 2021?
         </label>
         <input
-          type="text"
+          type="number"
+          min="0"
           className="w-full border rounded p-2 mt-2 mb-3 focus:outline-none focus:border-blue-500"
           name="expense21"
           placeholder='$'

@@ -1,173 +1,210 @@
 const client = require('./model.js');
 const databasecontroller = {
+  async getuser(req, res, next) {
+    console.log('getuser controller');
+    try {
+      const userName = req.locals.user;
+      console.log('name ', userName);
 
-    async getuser(req, res, next) {
-        console.log('getuser controller')
-        try {
-
-        const userName = req.locals.user;
-        console.log('name ', userName)
-
-        if (!userName) {
-            return next({
-                status: 400,
-                error: 'Name parameter is required.'
-            });
-        }
-
-        const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
-        const selectParams = [userName];
-
-        const result = await client.query(selectQuery, selectParams);
-        console.log('result ', result)
-
-        if (result.rows.length === 0) {
-            return next({
-                status: 404,
-                error: 'User not found.'
-            });
-        }
-
-        res.locals.user = result.rows[0];
-        next();
-
-    } catch (error) {
+      if (!userName) {
         return next({
-            status: 500,
-            error: error.message
+          status: 400,
+          error: 'Name parameter is required.',
         });
+      }
+
+      const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
+      const selectParams = [userName];
+
+      const result = await client.query(selectQuery, selectParams);
+      console.log('result ', result);
+
+      if (result.rows.length === 0) {
+        return next({
+          status: 404,
+          error: 'User not found.',
+        });
+      }
+
+      res.locals.user = result.rows[0];
+      return next();
+    } catch (error) {
+      return next({
+        status: 500,
+        error: error.message,
+      });
     }
+  },
 
-    },
+  async makeuser(req, res, next) {
+    try {
+      const {
+        username,
+        hashPassword,
+        age,
+        salary,
+        taxPercent,
+        employerCont,
+        medCost1,
+        medCost2,
+        medCost3,
+      } = req.body;
 
-    async makeuser(req, res, next) {
-        try {
-            const { username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3 } = req.body;
-            
-            // manage error for incomplete user creation 
-            if (!username || !age || !salary) {
-                next({
-                    status: 400,
-                    error: 'Name, age, and salary required.'
-                })
-            }
+      // manage error for incomplete user creation
+      if (!username || !age || !salary) {
+        return next({
+          status: 400,
+          error: 'Name, age, and salary required.',
+        });
+      }
 
-            // create new user 
-            const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
-            const insertParams = [username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3];
+      // create new user
+      const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+      const insertParams = [
+        username,
+        hashPassword,
+        age,
+        salary,
+        taxPercent,
+        employerCont,
+        medCost1,
+        medCost2,
+        medCost3,
+      ];
 
-            const result = await client.query(insertQuery, insertParams);
-            res.locals.message = 'User creation succesful.'
-            return next();
+      const result = await client.query(insertQuery, insertParams);
+      res.locals.message = 'User creation succesful.';
+      return next();
+    } catch (error) {
+      return next({
+        status: 500,
+        error: error,
+      });
+    }
+  },
 
-        } catch (error) {
-            return next({
-                status: 500,
-                error: error, 
-            })
-        }
-    },
+  async updateUser(req, res, next) {
+    try {
+      const {
+        username,
+        hashPassword,
+        age,
+        salary,
+        taxPercent,
+        employerCont,
+        medCost1,
+        medCost2,
+        medCost3,
+      } = req.body;
 
-    async updateUser (req, res, next) {
-        try{
-            const { username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3 } = req.body; 
+      // can likely eliminate this interior get request once we have a locals chain after auth implementation
+      const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
+      const selectParams = [username];
 
-            // can likely eliminate this interior get request once we have a locals chain after auth implementation
-            const selectQuery = 'SELECT * FROM fsa_app_db WHERE name = $1';
-            const selectParams = [username];
+      const userResults = await client.query(selectQuery, selectParams);
 
-            const userResults = await client.query(selectQuery, selectParams);
+      if (userResults.rows.length === 0) {
+        return next({
+          status: 404,
+          error: 'User not found.',
+        });
+      }
 
-            if (userResults.rows.length === 0) {
-                return next({
-                    status: 404,
-                    error: 'User not found.'
-                });
-            }
+      const currentUser = userResults.rows[0];
+      console.log('currentUser ', currentUser);
+      const currentUserID = currentUser.id;
+      console.log('currentUserID ', currentUserID);
 
-            const currentUser = userResults.rows[0];
-            console.log('currentUser ', currentUser)
-            const currentUserID = currentUser.id;
-            console.log('currentUserID ', currentUserID)
+      const updatedName = username || currentUser.username;
+      const updatedAge = age || currentUser.age;
+      const updatedSalary = salary || currentUser.salary;
+      const updatedTaxPercent = taxPercent || currentUser.taxPercent;
+      const updatedEmployerCont = employerCont || currentUser.employerCont;
+      const updatedMedCost1 = medCost1 || currentUser.medCost1;
+      const updatedMedCost2 = medCost2 || currentUser.medCost2;
+      const updatedMedCost3 = medCost3 || currentUser.medCost3;
 
-            const updatedName = username || currentUser.username;
-            const updatedAge = age || currentUser.age;
-            const updatedSalary = salary || currentUser.salary;
-            const updatedTaxPercent = taxPercent || currentUser.taxPercent;
-            const updatedEmployerCont = employerCont || currentUser.employerCont;
-            const updatedMedCost1 = medCost1 || currentUser.medCost1;
-            const updatedMedCost2 = medCost2 || currentUser.medCost2;
-            const updatedMedCost3 = medCost3 || currentUser.medCost3;
-            
-            const updateQuery = `
+      const updateQuery = `
                 UPDATE fsa_app_db
                 SET username = $1, age = $2, salary = $3, taxPercent = $4, employerCont = $5, medCost1 = $6, medCost2 = $7, medCost3 = $8
                 WHERE id = $9
             `;
 
-            const calculations = {}
+      const calculations = {};
 
-            calculations.avgMedicalExpenses = (updatedMedCost1 + updatedMedCost2 + updatedMedCost3) / 3;
-            calculations.avgMedicalExpenses = calculations.avgMedicalExpenses.toFixed(2);
-            calculations.yearlyCont = calculations.avgMedicalExpenses - updatedEmployerCont;
-            calculations.monthlyCont = calculations.yearlyCont / 12; 
-            calculations.salaryAfterCont = updatedSalary - calculations.avgMedicalExpenses;
+      calculations.avgMedicalExpenses =
+        (updatedMedCost1 + updatedMedCost2 + updatedMedCost3) / 3;
+      calculations.avgMedicalExpenses =
+        calculations.avgMedicalExpenses.toFixed(2);
+      calculations.yearlyCont =
+        calculations.avgMedicalExpenses - updatedEmployerCont;
+      calculations.monthlyCont = calculations.yearlyCont / 12;
+      calculations.salaryAfterCont =
+        updatedSalary - calculations.avgMedicalExpenses;
 
-            const updateParams = [updatedName, updatedAge, updatedSalary, updatedTaxPercent, updatedEmployerCont, updatedMedCost1, updatedMedCost2, updatedMedCost3, currentUserID];
+      const updateParams = [
+        updatedName,
+        updatedAge,
+        updatedSalary,
+        updatedTaxPercent,
+        updatedEmployerCont,
+        updatedMedCost1,
+        updatedMedCost2,
+        updatedMedCost3,
+        currentUserID,
+      ];
 
-            const result = await client.query(updateQuery, updateParams);
+      const result = await client.query(updateQuery, updateParams);
 
-            res.locals.message = 'User updated successfully';
-            res.locals.updatedUser = result;
-            res.locals.calculations = calculations;
+      res.locals.message = 'User updated successfully';
+      res.locals.updatedUser = result;
+      res.locals.calculations = calculations;
 
-            return next();
-
-        } catch (error) {
-            return next({
-                status: 500,
-                error: error, 
-            })
-        }
-    }, 
-
-    async deleteuser(req, res, next) {
-        try {
-
-        const username = res.locals.user; 
-
-            // can likely eliminate this interior get request once we have a locals chain after auth implementation
-        const selectQuery = 'SELECT * FROM fsa_app_db WHERE name = $1';
-        const selectParams = [username];
-
-        const userResults = await client.query(selectQuery, selectParams);
-
-        if (userResults.rows.length === 0) {
-            return next({
-                status: 404,
-                error: 'User not found.'
-            });
-        }
-
-        const currentUser = userResults.rows[0];
-        console.log('currentUser ', currentUser)
-        const currentUserID = currentUser.id;
-        console.log('currentUserID ', currentUserID)
-
-        const deleteQuery = 'DELETE FROM fsa_app_db WHERE id = $1';
-        const deleteParams = [currentUserID];
-        const deleteResult = await client.query(deleteQuery, deleteParams);
-
-        res.locals.deletedUser = deleteResult;
-        res.locals.message = 'User deleted'
-
+      return next();
     } catch (error) {
+      return next({
+        status: 500,
+        error: error,
+      });
+    }
+  },
+
+  async deleteuser(req, res, next) {
+    try {
+      const username = res.locals.user;
+
+      // can likely eliminate this interior get request once we have a locals chain after auth implementation
+      const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
+      const selectParams = [username];
+
+      const userResults = await client.query(selectQuery, selectParams);
+
+      if (userResults.rows.length === 0) {
         return next({
-            status: 500,
-            error: error.message
+          status: 404,
+          error: 'User not found.',
         });
+      }
+
+      const currentUser = userResults.rows[0];
+      console.log('currentUser ', currentUser);
+      const currentUserID = currentUser.id;
+      console.log('currentUserID ', currentUserID);
+
+      const deleteQuery = 'DELETE FROM fsa_app_db WHERE id = $1';
+      const deleteParams = [currentUserID];
+      const deleteResult = await client.query(deleteQuery, deleteParams);
+
+      res.locals.deletedUser = deleteResult;
+      res.locals.message = 'User deleted';
+      return next();
+    } catch (error) {
+      return next({
+        status: 500,
+        error: error.message,
+      });
     }
-    }
-}
+  },
+};
 
 module.exports = databasecontroller;
