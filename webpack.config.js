@@ -85,7 +85,7 @@ const config = {
     compress: true,
     port: 8080,
     // enable HMR on the devServer
-    hot: true,
+    // hot: true,
     // fallback to root for other urls. Best practice if you need client side routing
     historyApiFallback: true,
     proxy: {
