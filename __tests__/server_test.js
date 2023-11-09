@@ -1,4 +1,4 @@
-const db = require('../server/server.js');
+require('../server/server.js');
 const request = require('supertest');
 
 const server = 'http://localhost:3000/api';
@@ -7,7 +7,7 @@ const server = 'http://localhost:3000/api';
 /** 
  * testing routes:
  *  ALL ROUTES START WITH '/api' *****
- *  1. get '/'
+ *  1. get '/'                  DONE
  *  2. post '/estimate'
  *  3. post '/login'
  *  4. post '/signup'
@@ -33,13 +33,72 @@ describe('Route integration', () => {
           });
         });
     });
+    
+    describe('/estimate', () => {
+        describe('POST', () => {
+        it('responds with 200 status and application/json content type', () => {
+            return request(server)
+            .post('/estimate')
+            .send({
+                expense23: 1000,
+                expense22: 1000,
+                expense21: 1000,
+              })
+            .expect('Content-Type', /application\/json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toHaveProperty('moneyLost');
+                expect(response.body).toHaveProperty('lostTaxSavings');
+            })
+          });
+        });
+    });
 
-
+    describe('/signup', () => {
+        describe('POST', () => {
+        xit('creates new user', () => {
+                return request(server)
+                .post('/signup')
+                .send({
+                    username: 'Zack number 106',
+                    password: 'test',
+                    age: 25,
+                    salary: 505000
+                })
+                .expect('Content-Type', /application\/json/)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body).toBe('User creation succesful.')
+                })
+            })
+        });
+    });
+    
+    describe('/login', () => {
+        describe('POST', () => {
+        it('logs user in', () => {
+                return request(server)
+                .post('/login')
+                .send({
+                    username: 'Zack number 106',
+                    password: '$2b$10$kpsvNDyhD/PURNrN2DgaveYxqHTppa0HqyosCb3Wb0jNY3cZBKaW2'
+                })
+                .expect('Content-Type', /application\/json/)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.username).toBe('Zack number 106')
+                })
+            })
+        });
+    });
+});
 
 
     
-
-})
+// // log-in
+// apiRouter.post('/login', authcontroller.login, databasecontroller.getuser, (req, res) => {
+//     res.status(200).json(res.locals.user);
+//   });
 
 
 
