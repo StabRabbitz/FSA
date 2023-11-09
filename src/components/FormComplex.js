@@ -5,11 +5,12 @@ import ResultBox from './ResultBox';
 const FormComplex = () => {
   const [form, setForm] = useState({
     name: '',
-    age: '',
     salary: '',
     taxBracket: '',
-    pastExpenses: '',
     employeeContrib: '',
+    medCost1: '',
+    medCost2: '',
+    medCost3: '',
   });
   const handleChange = (e) => {
     setForm({
@@ -20,12 +21,13 @@ const FormComplex = () => {
 
   const handleSubmit = () => {
     const data = {
-      name: '',
-      age: '',
-      salary: '',
-      taxBracket: '',
-      pastExpenses: '',
-      employerContrib: '',
+      name: form.name,
+      salary: form.salary,
+      taxBracket: form.taxBracket,
+      employerContrib: form.employeeContrib,
+      medCost1: form.medCost1,
+      medCost2: form.medCost2,
+      medCost3: form.medCost3,
     };
     fetch('http://localhost:3000/', {
       method: 'POST',
@@ -81,6 +83,7 @@ const FormComplex = () => {
           </label>
           <input
             type="number"
+            id="taxBracket"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="taxBracket"
             placeholder='ex. 25%'
@@ -92,7 +95,7 @@ const FormComplex = () => {
           <input
             type="text"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
-            name="pastExpenses"
+            name="medCost1"
             placeholder='$'
             onChange={handleChange}
           />
@@ -102,7 +105,7 @@ const FormComplex = () => {
           <input
             type="text"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
-            name="pastExpenses"
+            name="medCost2"
             placeholder='$'
             onChange={handleChange}
           />
@@ -112,7 +115,7 @@ const FormComplex = () => {
           <input
             type="text"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
-            name="pastExpenses"
+            name="medCost3"
             placeholder='$'
             onChange={handleChange}
           />

@@ -1,4 +1,18 @@
 const client = require('./model.js');
+const jwt = require('jsonwebtoken');
+
+// helper function to create a jwt
+function createToken(id) {
+  // jwt sign takes in:
+  // payload - obj: use primary key value
+  // secret key: string stored in .env
+  // options - includes:
+    // algorithm (defaults to HS256)
+    // expiresIn (seconds?)
+  // callback
+  return jwt.sign({ id }, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION});
+}
+
 const databasecontroller = {
   async getuser(req, res, next) {
     console.log('getuser controller');
@@ -40,7 +54,6 @@ const databasecontroller = {
     try {
       const {
         username,
-        hashPassword,
         age,
         salary,
         taxPercent,
@@ -50,19 +63,41 @@ const databasecontroller = {
         medCost3,
       } = req.body;
 
+      const hashedPassword = res.locals.hashedPassword
+
       // manage error for incomplete user creation
-      if (!username || !age || !salary) {
+      if (!username || !hashedPassword) {
         return next({
           status: 400,
-          error: 'Name, age, and salary required.',
+          error: 'Name, password required.',
         });
       }
 
+      // if user already exists, send message back
+      const selectValues = [username];
+      const selectQuery = `
+          select 1
+          from fsa_app_db fad
+          where fad.username = $1
+      `
+      const userDetails = await client.query(selectQuery, selectValues);
+      if (userDetails.rowCount > 0) return next({
+          log: 'Username already exists',
+          status: 409,
+          message: { err: 'Username already exists' },
+      })
+
+
+      // handle errors on insert
+      
+
+
       // create new user
-      const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
+      const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
+      // const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword) VALUES ($1, $2) RETURNING *`;
       const insertParams = [
         username,
-        hashPassword,
+        hashedPassword,
         age,
         salary,
         taxPercent,
@@ -70,9 +105,25 @@ const databasecontroller = {
         medCost1,
         medCost2,
         medCost3,
-      ];
+      ]
+      const newUser = await client.query(insertQuery, insertParams);
 
-      const result = await client.query(insertQuery, insertParams);
+      if (newUser.rowCount === 0) return next({
+        log: `Failed to insert user into db`,
+        status: 500,
+        message: { err: `Error in signup`},
+      })
+      // get id of newly inserted row
+      const userId = newUser.rows[0].id
+
+      // create jwt and attache as a cookie
+      const token = createToken(userId); // pass in primary key id
+      res.cookie('token', token, {
+          httpOnly: true,
+          secure: true
+          // ***** might need updates so it doesn't expire after session
+      })
+
       res.locals.message = 'User creation succesful.';
       return next();
     } catch (error) {
