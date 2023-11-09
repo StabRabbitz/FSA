@@ -2,6 +2,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+// POSTGRES_URI: postgres://unbrdbbu:YlyeXVScMxCm2eFHy-ANcjRLiWdfUK4C@bubble.db.elephantsql.com/unbrdbbu
+// JWT_SECRET: vxo1K3eU4o3RlOxzp8hS9lHPnxhojkgyd5sr4mkG3kF3iYdXrDJzNa5oRWgAB7sGzMIXMDRTqwN4WyrQCmys6HNnJbXTw1xcGWrAHY1YQ00GpFkujQ2nLYACq1UozaKjwhASlX6htJnbQ9lBBghJvKuGMBgBQO5JXmI3QUDPtbM3TbK2guFQVpJkoCslCtHWLfmEHjhZkmXV6ytXjQY7t3QZEQx81UXHQcCIvw29WxTIvSEftmJWIsakOLP1T4bo
+// JWT_EXPIRATION: 90000
+
+
+
+
 // importing postgres uri and creating pool as temporary solution. Later will need to import the file where this pool is created
 const { Pool } = require('pg');
 const pool = new Pool({
@@ -107,17 +114,16 @@ authcontroller.signup = async (req, res, next) => {
 
         // add message to res.locals and invoke next
         res.locals.message = 'Success!'
-        next();
+        return next();
     }
     catch (error) {
         // Invoke global err handler
-        next({
+        return next({
             log: `Express error handler caught middleware error in authcontroller.signup. Error: ${error}`,
             status: 500,
             message: { err: `Error in signup: ${error}`},
         })
     }
-    next();
 };
 
 authcontroller.login = async (req, res, next) => {
@@ -125,6 +131,11 @@ authcontroller.login = async (req, res, next) => {
     try {
         // get username and password from req.body
         const { username, password } = req.body;
+        if (!username || !password) return next({
+            log: 'Username or password not submitted', 
+            status: 422,
+            message: { err: 'Username or password not submitted' },
+        })
 
         // find username in DB
         const queryToFindUser = `
@@ -172,10 +183,10 @@ authcontroller.login = async (req, res, next) => {
 
         // add username to res.locals and invoke next
         res.locals.user = username;
-        next();
+        return next();
     } catch (error) {
         // Invoke global err handler
-        next({
+        return next({
             log: `Express error handler caught middleware error in authcontroller.login. Error: ${error}`,
             status: 500,
             message: { err: `Username/Password combo is not correct`},
@@ -193,10 +204,10 @@ authcontroller.isLoggedIn = async (req, res, next) => {
         console.log(token);
         const payload = jwt.verify(token, process.env.JWT_SECRET);
         // throws an error if can't verify
-        next();
+        return next();
       } catch (error) {
         // Invoke global err handler
-        next({
+        return next({
             log: `Express error handler caught middleware error in authcontroller.isLoggedIn. Error: ${error}`,
             status: 500,
             message: { err: `Error in checking if logged in: ${error}`},
