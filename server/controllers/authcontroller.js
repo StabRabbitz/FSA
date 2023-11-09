@@ -2,13 +2,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// POSTGRES_URI: postgres://unbrdbbu:YlyeXVScMxCm2eFHy-ANcjRLiWdfUK4C@bubble.db.elephantsql.com/unbrdbbu
-// JWT_SECRET: vxo1K3eU4o3RlOxzp8hS9lHPnxhojkgyd5sr4mkG3kF3iYdXrDJzNa5oRWgAB7sGzMIXMDRTqwN4WyrQCmys6HNnJbXTw1xcGWrAHY1YQ00GpFkujQ2nLYACq1UozaKjwhASlX6htJnbQ9lBBghJvKuGMBgBQO5JXmI3QUDPtbM3TbK2guFQVpJkoCslCtHWLfmEHjhZkmXV6ytXjQY7t3QZEQx81UXHQcCIvw29WxTIvSEftmJWIsakOLP1T4bo
-// JWT_EXPIRATION: 90000
-
-
-
-
 // importing postgres uri and creating pool as temporary solution. Later will need to import the file where this pool is created
 const { Pool } = require('pg');
 const pool = new Pool({
@@ -24,18 +17,6 @@ const pool = new Pool({
 const SALT_WORK_FACTOR = 10;
 
 const authcontroller = {}
-
-// helper function to create a jwt
-function createToken(id) {
-    // jwt sign takes in:
-    // payload - obj: use primary key value
-    // secret key: string stored in .env
-    // options - includes:
-      // algorithm (defaults to HS256)
-      // expiresIn (seconds?)
-    // callback
-    return jwt.sign({ id }, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION});
-}
 
 function hashPassword(password) {
     return new Promise((resolve, reject) => {
@@ -54,7 +35,7 @@ function hashPassword(password) {
   }
 
 // sign up controller
-authcontroller.signup = async (req, res, next) => {
+authcontroller.hashNewPassword = async (req, res, next) => {
     console.log('signup controller invoked');
     try {
         // get username and password from req. If don't exist, invoke global error handler
@@ -65,55 +46,13 @@ authcontroller.signup = async (req, res, next) => {
             message: { err: 'Username or password not submitted' },
         })
         
-        // if user already exists, send message back
-        const selectValues = [username];
-        const selectQuery = `
-            select 1
-            from fsa_app_db fad
-            where fad.username = $1
-        `
-        const userDetails = await pool.query(selectQuery, selectValues);
-        if (userDetails.rowCount > 0) return next({
-            log: 'Username already exists',
-            status: 409,
-            message: { err: 'Username already exists' },
-        })
-
+        
         // create new user with hashed password
         const hashedPassword = await hashPassword(password);
+        res.locals.hashedPassword = hashedPassword;
         console.log(hashedPassword);
-        const insertQuery = `
-            insert into fsa_app_db (
-                username
-                , hashpassword
-            )
-            values (
-                $1
-                ,$2
-            )
-            RETURNING id
-        `
-        const insertValues = [username, hashedPassword]
-        const newUser = await pool.query(insertQuery, insertValues);
-        // handle errors on insert
-        if (newUser.rowCount === 0) return next({
-            log: `Failed to insert user into db`,
-            status: 500,
-            message: { err: `Error in signup`},
-        })
-        // get id of newly inserted row
-        const userId = newUser.rows[0].id
 
-        // create jwt and attache as a cookie
-        const token = createToken(userId); // pass in primary key id
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: true
-            // ***** might need updates so it doesn't expire after session
-        })
 
-        // add message to res.locals and invoke next
-        res.locals.message = 'Success!'
         return next();
     }
     catch (error) {
