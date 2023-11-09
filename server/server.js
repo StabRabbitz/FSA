@@ -39,7 +39,7 @@ apiRouter.post('/login', authcontroller.login, databasecontroller.getuser, (req,
 // tested? x 
 
 // sign-up
-apiRouter.post('/signup', authcontroller.signup, databasecontroller.makeuser, (req, res) => {
+apiRouter.post('/signup', authcontroller.hashNewPassword, databasecontroller.makeuser, (req, res) => {
   return res.status(200).json(res.locals.message);
 });
 
