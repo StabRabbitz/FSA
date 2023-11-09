@@ -57,7 +57,7 @@ const FormComplex = () => {
       <div className='flex justify-center mt-5'>
         <form className="bg-white p-8 rounded shadow-md sm:w-5/12 ">
           <label className="text-lg font-semibold text-gray-700">
-            What is your name?
+            Name:
           </label>
           <input
             type="text"
@@ -67,53 +67,63 @@ const FormComplex = () => {
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-            What is your age?
+            Annual Income:
           </label>
           <input
-            type="text"
-            className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
-            name="age"
-            placeholder='33'
-            onChange={handleChange}
-          />
-          <label className="text-lg font-semibold text-gray-700">
-            What is your annual income?
-          </label>
-          <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="salary"
-            placeholder='$100,000'
+            placeholder='$'
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-            What is your tax bracket?
+            Tax Percentage:
           </label>
           <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="taxBracket"
-            placeholder='$95,375 to $182,100'
+            placeholder='ex. 25%'
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-           What were your average annual medical expenses in the past 3 years?
+           Total Medical Expenses in 2021:
           </label>
           <input
             type="text"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="pastExpenses"
-            placeholder='$1000'
+            placeholder='$'
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-            How much does your employer contribute to your FSA?
+           Total Medical Expenses in 2022:
+          </label>
+          <input
+            type="text"
+            className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
+            name="pastExpenses"
+            placeholder='$'
+            onChange={handleChange}
+          />
+          <label className="text-lg font-semibold text-gray-700">
+           Total Medical Expenses in 2023:
+          </label>
+          <input
+            type="text"
+            className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
+            name="pastExpenses"
+            placeholder='$'
+            onChange={handleChange}
+          />
+          <label className="text-lg font-semibold text-gray-700">
+            Employer FSA Contribution Amount:
           </label>
           <input
             type="text"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="employerContrib"
-            placeholder='$500'
+            placeholder='$'
             onChange={handleChange}
           />
           <button
