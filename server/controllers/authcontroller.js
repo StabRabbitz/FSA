@@ -18,6 +18,18 @@ const SALT_WORK_FACTOR = 10;
 
 const authcontroller = {}
 
+function createToken(id) {
+    // jwt sign takes in:
+    // payload - obj: use primary key value
+    // secret key: string stored in .env
+    // options - includes:
+      // algorithm (defaults to HS256)
+      // expiresIn (seconds?)
+    // callback
+    return jwt.sign({ id }, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRATION});
+  }
+  
+
 function hashPassword(password) {
     return new Promise((resolve, reject) => {
       bcrypt.hash(password, SALT_WORK_FACTOR, (err, hash) => {
@@ -51,7 +63,6 @@ authcontroller.hashNewPassword = async (req, res, next) => {
         const hashedPassword = await hashPassword(password);
         res.locals.hashedPassword = hashedPassword;
         console.log(hashedPassword);
-
 
         return next();
     }
@@ -119,9 +130,27 @@ authcontroller.login = async (req, res, next) => {
             secure: true
             // ***** might need updates so it doesn't expire after session
         })
+        
+        const insertTokenParams = [token, username];
+        const sqlQuery = `
+            UPDATE fsa_app_db SET sessiontoken = $1 WHERE username = $2 RETURNING *
+        `
+        const tokenDetails = await pool.query(sqlQuery, insertTokenParams);
+        console.log('tokenDetails.rows: ', tokenDetails.rows);
+        if (tokenDetails.rowCount === 0) return next({
+            log: `Failed to update session token in db`,
+            status: 500,
+            message: { err: `Error in login`},
+        })
+
+        // UPDATE table_name
+        // SET column1 = value1, column2 = value2, ...
+        // WHERE condition;
 
         // add username to res.locals and invoke next
         res.locals.user = username;
+
+
         return next();
     } catch (error) {
         // Invoke global err handler
@@ -135,7 +164,7 @@ authcontroller.login = async (req, res, next) => {
 
 
 
-authcontroller.isLoggedIn = async (req, res, next) => {
+authcontroller.isLoggedIn = (req, res, next) => {
     console.log('isLoggedin controller invoked');
     try {
         // get from cookies and check with jwt's built in verify method
