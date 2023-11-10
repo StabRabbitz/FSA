@@ -10,18 +10,18 @@ import Button from './Button';
 const SignedIn = () => {
   const [serverResponse, setServerResponse] = useState([]);
 
-  const navigate = useNavigate();
-  useEffect(() => {
-    fetch('http://localhost:3000/api/isloggedin')
-    .then(response => {
-      if(!response.status === 200) {
-        navigate('/')
-      }
-    })
-    .catch(error => {
-      console.log(error);
-    })
-  }, []);
+//   const navigate = useNavigate();
+//   useEffect(() => {
+//     fetch('http://localhost:3000/api/isloggedin')
+//     .then(response => {
+//       if(response.status !== 200) {
+//         navigate('/')
+//       }
+//     })
+//     .catch(error => {
+//       console.log(error);
+//     })
+//   }, []);
 
 
   return (

@@ -19,7 +19,9 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('handle submit 1')
     const data = {
       name: form.name,
       salary: form.salary,
@@ -29,6 +31,7 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
       medCost2: form.medCost2,
       medCost3: form.medCost3,
     };
+    console.log('handle submit 2')
     fetch('http://localhost:3000/api/updateuser', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -38,6 +41,7 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
     })
       .then((res) => res.json())
       .then((calculations) => {
+        console.log('handle submit 3')
         console.log(calculations);
         setServerResponse([calculations.avgMedicalExpenses, calculations.yearlyCont, calculations.monthlyCont, calculations.salaryAfterCont, calculations.taxSavings])
       })

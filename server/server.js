@@ -47,7 +47,7 @@ apiRouter.post('/signup', authcontroller.hashNewPassword, databasecontroller.mak
    
 
 // route for patching user info 
-apiRouter.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.updateUser, (req, res) => {
+apiRouter.post('/updateuser', databasecontroller.updateUser, (req, res) => {
   return res.status(200).json(res.locals);
 });
 
@@ -70,7 +70,8 @@ apiRouter.delete('/deleteuser', authcontroller.isLoggedIn, databasecontroller.de
 // global error handler // does the router 
 app.use((err, req, res, next) => {
     const defaultErr = {
-      log: 'Express error handler caught unknown middleware error',
+      // log: 'Express error handler caught unknown middleware error',
+      log: err,
       status: 500,
       message: { err: 'An error occurred' },
     };
