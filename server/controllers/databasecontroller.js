@@ -14,53 +14,46 @@ function createToken(id) {
 }
 
 const databasecontroller = {
-  async getuser(req, res, next) {
-    console.log('getuser controller');
-    try {
-      const userName = req.locals.user;
-      console.log('name ', userName);
+  // async getuser(req, res, next) {
+  //   console.log('getuser controller');
+  //   try {
+  //     const userName = req.locals.user;
+  //     console.log('name ', userName);
 
-      if (!userName) {
-        return next({
-          status: 400,
-          error: 'Name parameter is required.',
-        });
-      }
+  //     if (!userName) {
+  //       return next({
+  //         status: 400,
+  //         error: 'Name parameter is required.',
+  //       });
+  //     }
 
-      const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
-      const selectParams = [userName];
+  //     const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
+  //     const selectParams = [userName];
 
-      const result = await client.query(selectQuery, selectParams);
-      console.log('result ', result);
+  //     const result = await client.query(selectQuery, selectParams);
+  //     console.log('result ', result);
 
-      if (result.rows.length === 0) {
-        return next({
-          status: 404,
-          error: 'User not found.',
-        });
-      }
+  //     if (result.rows.length === 0) {
+  //       return next({
+  //         status: 404,
+  //         error: 'User not found.',
+  //       });
+  //     }
 
-      res.locals.user = result.rows[0];
-      return next();
-    } catch (error) {
-      return next({
-        status: 500,
-        error: error.message,
-      });
-    }
-  },
+  //     res.locals.user = result.rows[0];
+  //     return next();
+  //   } catch (error) {
+  //     return next({
+  //       status: 500,
+  //       error: error.message,
+  //     });
+  //   }
+  // },
 
   async makeuser(req, res, next) {
     try {
       const {
         username,
-        age,
-        salary,
-        taxPercent,
-        employerCont,
-        medCost1,
-        medCost2,
-        medCost3,
       } = req.body;
 
       const hashedPassword = res.locals.hashedPassword
@@ -93,19 +86,22 @@ const databasecontroller = {
 
 
       // create new user
-      const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword, age, salary, taxPercent, employerCont, medCost1, medCost2, medCost3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
-      // const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword) VALUES ($1, $2) RETURNING *`;
+      // const insertQuery = `INSERT INTO fsa_app_db (sessionToken, username, hashPassword, name, salary, taxPercent, employerCont, medCost1, medCost2, medCost3) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
+      const insertQuery = `INSERT INTO fsa_app_db (username, hashPassword) VALUES ($1, $2) RETURNING *`;
       const insertParams = [
         username,
         hashedPassword,
-        age,
-        salary,
-        taxPercent,
-        employerCont,
-        medCost1,
-        medCost2,
-        medCost3,
       ]
+      // sessionToken,
+      // username,
+      // hashedPassword,
+      // name,
+      // salary,
+      // taxPercent,
+      // employerCont,
+      // medCost1,
+      // medCost2,
+      // medCost3,
       const newUser = await client.query(insertQuery, insertParams);
 
       if (newUser.rowCount === 0) return next({
@@ -124,6 +120,17 @@ const databasecontroller = {
           // ***** might need updates so it doesn't expire after session
       })
 
+      const insertTokenParams = [token, username];
+      const sqlQuery = `
+          INSERT INTO fsa_app_db (sessiontoken) VALUES ($1) WHERE username = $2 RETURNING *
+      `
+      const tokenDetails = await client.query(sqlQuery, insertTokenParams);
+      if (tokenDetails.rowCount === 0) return next({
+        log: `Failed to insert session token into db`,
+        status: 500,
+        message: { err: `Error in signup`},
+      })
+
       res.locals.message = 'User creation succesful.';
       return next();
     } catch (error) {
@@ -137,24 +144,24 @@ const databasecontroller = {
   async updateUser(req, res, next) {
     try {
       const {
-        username,
-        hashPassword,
-        age,
+        name,
         salary,
-        taxPercent,
-        employerCont,
+        taxBracket,
+        employerContrib,
         medCost1,
         medCost2,
         medCost3,
       } = req.body;
 
+      const { token } = req.cookies;
+
       // can likely eliminate this interior get request once we have a locals chain after auth implementation
-      const selectQuery = 'SELECT * FROM fsa_app_db WHERE username = $1';
-      const selectParams = [username];
+      const selectQuery = 'SELECT * FROM fsa_app_db WHERE sessiontoken = $1';
+      const selectParams = [token];
 
       const userResults = await client.query(selectQuery, selectParams);
 
-      if (userResults.rows.length === 0) {
+      if (userResults.rows.length !== 1) {
         return next({
           status: 404,
           error: 'User not found.',
@@ -166,19 +173,20 @@ const databasecontroller = {
       const currentUserID = currentUser.id;
       console.log('currentUserID ', currentUserID);
 
-      const updatedName = username || currentUser.username;
-      const updatedAge = age || currentUser.age;
+      const updatedSessionToken = sessionToken || currentUser.sessiontoken;
+      const updatedUsername = username || currentUser.username;
+      const updatedName = name || currentUser.name;
       const updatedSalary = salary || currentUser.salary;
-      const updatedTaxPercent = taxPercent || currentUser.taxPercent;
-      const updatedEmployerCont = employerCont || currentUser.employerCont;
+      const updatedTaxPercent = taxBracket || currentUser.taxpercent;
+      const updatedEmployerContrib = employerContrib || currentUser.employercontrib;
       const updatedMedCost1 = medCost1 || currentUser.medCost1;
       const updatedMedCost2 = medCost2 || currentUser.medCost2;
       const updatedMedCost3 = medCost3 || currentUser.medCost3;
 
       const updateQuery = `
                 UPDATE fsa_app_db
-                SET username = $1, age = $2, salary = $3, taxPercent = $4, employerCont = $5, medCost1 = $6, medCost2 = $7, medCost3 = $8
-                WHERE id = $9
+                SET username = $1, name = $2, salary = $3, taxpercent = $4, employercontrib = $5, medcost1 = $6, medcost2 = $7, medcost3 = $8, sessiontoken = $9, avgmedicalexpenses = $10, yearlycont = $11, monthlycont = $12, taxsavings = $13
+                WHERE id = $14
             `;
 
       const calculations = {};
@@ -188,20 +196,27 @@ const databasecontroller = {
       calculations.avgMedicalExpenses =
         calculations.avgMedicalExpenses.toFixed(2);
       calculations.yearlyCont =
-        calculations.avgMedicalExpenses - updatedEmployerCont;
+        calculations.avgMedicalExpenses - updatedEmployerContrib;
       calculations.monthlyCont = calculations.yearlyCont / 12;
       calculations.salaryAfterCont =
         updatedSalary - calculations.avgMedicalExpenses;
-
+      calculations.taxSavings =
+        calculations.avgMedicalExpenses * (taxBracket / 100); 
+      
       const updateParams = [
+        updatedUsername,
         updatedName,
-        updatedAge,
         updatedSalary,
         updatedTaxPercent,
-        updatedEmployerCont,
+        updatedEmployerContrib,
         updatedMedCost1,
         updatedMedCost2,
         updatedMedCost3,
+        updatedSessionToken,
+        calculations.avgMedicalExpenses,
+        calculations.yearlyCont,
+        calculations.monthlyCont,
+        calculations.taxSavings,
         currentUserID,
       ];
 

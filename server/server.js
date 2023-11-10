@@ -31,7 +31,7 @@ apiRouter.post('/estimate', estimateController.estimate, (req, res) => {
 // tested? [x]
 
 // log-in
-apiRouter.post('/login', authcontroller.login, databasecontroller.getuser, (req, res) => {
+apiRouter.post('/login', authcontroller.login, (req, res) => {
   res.status(200).json(res.locals.user);
 });
 
