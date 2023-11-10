@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from './components/Home';
-import FormComplex from './components/FormComplex';
+import SignedIn from './components/SignedIn';
 import Signup from './components/Signup';
 
 const App = () => {
@@ -14,7 +14,7 @@ const App = () => {
        
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/signedIn" element={<FormComplex />} />
+            <Route path="/signedIn" element={<SignedIn />} />
             <Route path="/signUp" element={<Signup />} />
           </Routes>
       </div>
