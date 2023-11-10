@@ -142,6 +142,7 @@ const databasecontroller = {
   },
 
   async updateUser(req, res, next) {
+    console.log('update user 1')
     try {
       const {
         name,
@@ -152,14 +153,18 @@ const databasecontroller = {
         medCost2,
         medCost3,
       } = req.body;
+    console.log('update user 2')
 
-      const { token } = req.cookies;
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjk5NTgzOTIxLCJleHAiOjE2OTk1ODQwMTF9.7PkvMrM42VkrZvQDJL3w2DAhV6_gsUip9rYGyaN-PsA";
+    console.log('update user 3')
 
       // can likely eliminate this interior get request once we have a locals chain after auth implementation
       const selectQuery = 'SELECT * FROM fsa_app_db WHERE sessiontoken = $1';
       const selectParams = [token];
 
       const userResults = await client.query(selectQuery, selectParams);
+      console.log('update user 4')
+      console.log(userResults.rows);
 
       if (userResults.rows.length !== 1) {
         return next({
@@ -167,25 +172,27 @@ const databasecontroller = {
           error: 'User not found.',
         });
       }
+      console.log('update user 5')
 
       const currentUser = userResults.rows[0];
       console.log('currentUser ', currentUser);
       const currentUserID = currentUser.id;
       console.log('currentUserID ', currentUserID);
+      console.log('update user 6')
 
-      const updatedSessionToken = sessionToken || currentUser.sessiontoken;
-      const updatedUsername = username || currentUser.username;
-      const updatedName = name || currentUser.name;
-      const updatedSalary = salary || currentUser.salary;
-      const updatedTaxPercent = taxBracket || currentUser.taxpercent;
-      const updatedEmployerContrib = employerContrib || currentUser.employercontrib;
-      const updatedMedCost1 = medCost1 || currentUser.medCost1;
-      const updatedMedCost2 = medCost2 || currentUser.medCost2;
-      const updatedMedCost3 = medCost3 || currentUser.medCost3;
+      const updatedSessionToken = currentUser.sessiontoken;
+      const updatedUsername = currentUser.username;
+      const updatedName = name;
+      const updatedSalary = salary;
+      const updatedTaxPercent = taxBracket;
+      const updatedEmployerContrib = employerContrib;
+      const updatedMedCost1 = medCost1;
+      const updatedMedCost2 = medCost2;
+      const updatedMedCost3 = medCost3;
 
       const updateQuery = `
                 UPDATE fsa_app_db
-                SET username = $1, name = $2, salary = $3, taxpercent = $4, employercontrib = $5, medcost1 = $6, medcost2 = $7, medcost3 = $8, sessiontoken = $9, avgmedicalexpenses = $10, yearlycont = $11, monthlycont = $12, taxsavings = $13
+                SET username = $1, name = $2, salary = $3, taxpercent = $4, employercont = $5, medcost1 = $6, medcost2 = $7, medcost3 = $8, sessiontoken = $9, avgmedicalexpenses = $10, yearlycont = $11, monthlycont = $12, taxsavings = $13
                 WHERE id = $14
             `;
 

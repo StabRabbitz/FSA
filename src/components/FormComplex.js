@@ -19,7 +19,9 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('handle submit 1')
     const data = {
       name: form.name,
       salary: form.salary,
@@ -29,7 +31,8 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
       medCost2: form.medCost2,
       medCost3: form.medCost3,
     };
-    fetch('api/updateuser', {
+    console.log('handle submit 2')
+    fetch('http://localhost:3000/api/updateuser', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -38,6 +41,7 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
     })
       .then((res) => res.json())
       .then((calculations) => {
+        console.log('handle submit 3')
         console.log(calculations);
         setServerResponse([calculations.avgMedicalExpenses, calculations.yearlyCont, calculations.monthlyCont, calculations.salaryAfterCont, calculations.taxSavings])
       })
@@ -50,7 +54,7 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
   return (
     <div className='mb-20'>
       <div className='flex justify-center mt-5'>
-        <form className="bg-white p-8 rounded shadow-md sm:w-5/12 ">
+        <form className="bg-white p-8 rounded shadow-md sm:w-5/12 " onSubmit={handleSubmit}>
           <label className="text-lg font-semibold text-gray-700">
             Name:
           </label>
