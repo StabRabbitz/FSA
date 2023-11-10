@@ -20,15 +20,17 @@ const Home = () => {
             Fill out the information below so that you can make an informed decision and take maximum advantage of
             your FSA.
           </p>
-          <p className='mx-auto text-center text-sm text-gray-500 mb-5'>
-            Your privacy is important to us, the information you input will not be shared with any third party.
-          </p>
       </div>
 
       <div className='flex justify-center'>
         <FormSimple serverResponse={serverResponse} setServerResponse={setServerResponse} />
         <ResultBox serverResponse={serverResponse} setServerResponse={setServerResponse} />
       </div>
+      <div className='mt-2'>
+          <p className='mx-auto text-center text-sm text-gray-500 mb-5'>
+            Your privacy is important to us, the information you input will not be shared with any third party.
+          </p>
+       </div>
 
       <SignIn />
       <MiscInfo />

@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ResultBox from './ResultBox';
 
-const FormComplex = () => {
+const FormComplex = ({serverResponse, setServerResponse}) => {
   const [form, setForm] = useState({
     name: '',
-    age: '',
     salary: '',
     taxBracket: '',
-    pastExpenses: '',
     employeeContrib: '',
+    medCost1: '',
+    medCost2: '',
+    medCost3: '',
   });
   const handleChange = (e) => {
     setForm({
@@ -20,14 +21,15 @@ const FormComplex = () => {
 
   const handleSubmit = () => {
     const data = {
-      name: '',
-      age: '',
-      salary: '',
-      taxBracket: '',
-      pastExpenses: '',
-      employerContrib: '',
+      name: form.name,
+      salary: form.salary,
+      taxBracket: form.taxBracket,
+      employerContrib: form.employeeContrib,
+      medCost1: form.medCost1,
+      medCost2: form.medCost2,
+      medCost3: form.medCost3,
     };
-    fetch('http://localhost:3000/', {
+    fetch('api/updateuser', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -35,8 +37,9 @@ const FormComplex = () => {
       },
     })
       .then((res) => res.json())
-      .then((expenses) => {
-        console.log(expenses);
+      .then((calculations) => {
+        console.log(calculations);
+        setServerResponse([calculations.avgMedicalExpenses, calculations.yearlyCont, calculations.monthlyCont, calculations.salaryAfterCont, calculations.taxSavings])
       })
       .catch((err) => {
         console.log(err);
@@ -46,18 +49,10 @@ const FormComplex = () => {
 
   return (
     <div className='mb-20'>
-      <div className='mt-16'>
-            <h2 className='max-w-3xl mx-auto text-center mt-3 mb-5 text-xl font-semibold'>
-              How Much Should You Contribute to Your Flexible Spending Account (FSA)?
-            </h2>
-            <p className=' max-w-3xl mx-auto text-center text-lg mb-3'>
-              Fill out the information below so that you can find out!
-            </p>
-      </div>
       <div className='flex justify-center mt-5'>
         <form className="bg-white p-8 rounded shadow-md sm:w-5/12 ">
           <label className="text-lg font-semibold text-gray-700">
-            What is your name?
+            Name:
           </label>
           <input
             type="text"
@@ -67,53 +62,64 @@ const FormComplex = () => {
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-            What is your age?
+            Annual Income:
           </label>
           <input
-            type="text"
-            className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
-            name="age"
-            placeholder='33'
-            onChange={handleChange}
-          />
-          <label className="text-lg font-semibold text-gray-700">
-            What is your annual income?
-          </label>
-          <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="salary"
-            placeholder='$100,000'
+            placeholder='$'
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-            What is your tax bracket?
+            Tax Percentage:
           </label>
           <input
-            type="text"
+            type="number"
+            id="taxBracket"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="taxBracket"
-            placeholder='$95,375 to $182,100'
+            placeholder='ex. 25%'
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-           What were your average annual medical expenses in the past 3 years?
+           Total Medical Expenses in 2021:
           </label>
           <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
-            name="pastExpenses"
-            placeholder='$1000'
+            name="medCost1"
+            placeholder='$'
             onChange={handleChange}
           />
           <label className="text-lg font-semibold text-gray-700">
-            How much does your employer contribute to your FSA?
+           Total Medical Expenses in 2022:
           </label>
           <input
-            type="text"
+            type="number"
+            className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
+            name="medCost2"
+            placeholder='$'
+            onChange={handleChange}
+          />
+          <label className="text-lg font-semibold text-gray-700">
+           Total Medical Expenses in 2023:
+          </label>
+          <input
+            type="number"
+            className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
+            name="medCost3"
+            placeholder='$'
+            onChange={handleChange}
+          />
+          <label className="text-lg font-semibold text-gray-700">
+            Employer FSA Contribution Amount:
+          </label>
+          <input
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="employerContrib"
-            placeholder='$500'
+            placeholder='$'
             onChange={handleChange}
           />
           <button
