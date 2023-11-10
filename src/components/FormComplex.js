@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ResultBox from './ResultBox';
 
-const FormComplex = () => {
+const FormComplex = ({serverResponse, setServerResponse}) => {
   const [form, setForm] = useState({
     name: '',
     salary: '',
@@ -29,7 +29,7 @@ const FormComplex = () => {
       medCost2: form.medCost2,
       medCost3: form.medCost3,
     };
-    fetch('http://localhost:3000/', {
+    fetch('api/updateuser', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -37,8 +37,9 @@ const FormComplex = () => {
       },
     })
       .then((res) => res.json())
-      .then((expenses) => {
-        console.log(expenses);
+      .then((calculations) => {
+        console.log(calculations);
+        setServerResponse([calculations.avgMedicalExpenses, calculations.yearlyCont, calculations.monthlyCont, calculations.salaryAfterCont, calculations.taxSavings])
       })
       .catch((err) => {
         console.log(err);
@@ -48,14 +49,6 @@ const FormComplex = () => {
 
   return (
     <div className='mb-20'>
-      <div className='mt-16'>
-            <h2 className='max-w-3xl mx-auto text-center mt-3 mb-5 text-xl font-semibold'>
-              How Much Should You Contribute to Your Flexible Spending Account (FSA)?
-            </h2>
-            <p className=' max-w-3xl mx-auto text-center text-lg mb-3'>
-              Fill out the information below so that you can find out!
-            </p>
-      </div>
       <div className='flex justify-center mt-5'>
         <form className="bg-white p-8 rounded shadow-md sm:w-5/12 ">
           <label className="text-lg font-semibold text-gray-700">
@@ -93,7 +86,7 @@ const FormComplex = () => {
            Total Medical Expenses in 2021:
           </label>
           <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="medCost1"
             placeholder='$'
@@ -103,7 +96,7 @@ const FormComplex = () => {
            Total Medical Expenses in 2022:
           </label>
           <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="medCost2"
             placeholder='$'
@@ -113,7 +106,7 @@ const FormComplex = () => {
            Total Medical Expenses in 2023:
           </label>
           <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="medCost3"
             placeholder='$'
@@ -123,7 +116,7 @@ const FormComplex = () => {
             Employer FSA Contribution Amount:
           </label>
           <input
-            type="text"
+            type="number"
             className="w-full border rounded p-2 mt-2 focus:outline-none focus:border-blue-500"
             name="employerContrib"
             placeholder='$'
