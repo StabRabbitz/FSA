@@ -116,7 +116,7 @@ const databasecontroller = {
       const token = createToken(userId); // pass in primary key id
       res.cookie('token', token, {
           httpOnly: true,
-          secure: true
+          secure: true,
           // ***** might need updates so it doesn't expire after session
       })
 
@@ -154,8 +154,9 @@ const databasecontroller = {
         medCost3,
       } = req.body;
     console.log('update user 2')
-
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjk5NTgzOTIxLCJleHAiOjE2OTk1ODQwMTF9.7PkvMrM42VkrZvQDJL3w2DAhV6_gsUip9rYGyaN-PsA";
+    console.log('cookie: ', req.cookie)
+    console.log('cookies: ', req.cookies)
+      const token = req.cookies;
     console.log('update user 3')
 
       // can likely eliminate this interior get request once we have a locals chain after auth implementation

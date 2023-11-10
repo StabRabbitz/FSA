@@ -8,26 +8,34 @@ const authcontroller = require('./controllers/authcontroller.js');
 const databasecontroller = require('./controllers/databasecontroller.js');
 const cors = require('cors');
 
-const htmlDirectory = path.join(__dirname,  '../public/index.html');
-// Do we need a CSS directory? 
-app.use(cors());
-app.use(express.json());
 app.use(cookieParser());
+
+const htmlDirectory = path.join(__dirname, '../public/index.html');
+// Do we need a CSS directory?
+// app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:8080', // Replace with the actual origin of your client
+    credentials: true,
+  })
+);
+app.use(express.json());
 
 const apiRouter = express.Router();
 app.use('/api', apiRouter);
 
-// serve HTML directory at get // does this need router ?? 
+// serve HTML directory at get // does this need router ??
 apiRouter.get('/', (req, res) => {
-    return res.status(200).sendFile(htmlDirectory);
-  });
+  return res.status(200).sendFile(htmlDirectory);
+});
 
 // no auth get request for managing basic estimate on landing page
 apiRouter.post('/estimate', estimateController.estimate, (req, res) => {
-  return res.status(200).json({ 
+  return res.status(200).json({
     moneyLost: res.locals.moneyLost,
-    lostTaxSavings: res.locals.lostTaxSavings});
-})
+    lostTaxSavings: res.locals.lostTaxSavings,
+  });
+});
 // tested? [x]
 
 // log-in
@@ -35,52 +43,60 @@ apiRouter.post('/login', authcontroller.login, (req, res) => {
   res.status(200).json(res.locals.user);
 });
 
-
-// tested? x 
+// tested? x
 
 // sign-up
-apiRouter.post('/signup', authcontroller.hashNewPassword, databasecontroller.makeuser, (req, res) => {
-  return res.status(200).json(res.locals.message);
-});
+apiRouter.post(
+  '/signup',
+  authcontroller.hashNewPassword,
+  databasecontroller.makeuser,
+  (req, res) => {
+    return res.status(200).json(res.locals.message);
+  }
+);
 
 // tested? x
-   
 
-// route for patching user info 
-apiRouter.post('/updateuser', databasecontroller.updateUser, (req, res) => {
+// route for patching user info
+apiRouter.patch('/updateuser', databasecontroller.updateUser, (req, res) => {
   return res.status(200).json(res.locals);
 });
 
 // ** John testing for authcontroller.isLoggedIn
-app.get('/isloggedin', authcontroller.isLoggedIn, (req, res) => res.sendStatus(200))
+app.get('/isloggedin', authcontroller.isLoggedIn, (req, res) =>
+  res.sendStatus(200)
+);
 
 // auto-trigger this when userInfo is updated // updates widget
-apiRouter.get('/updatedquote', (req, res) => {
+apiRouter.get('/updatedquote', (req, res) => {});
 
-});
+// need to look at locals id persistence once auth is in place
 
-// need to look at locals id persistence once auth is in place 
+apiRouter.delete(
+  '/deleteuser',
+  authcontroller.isLoggedIn,
+  databasecontroller.deleteuser,
+  (req, res) => {
+    return res.status(200).json(res.locals.message);
+  }
+);
 
-apiRouter.delete('/deleteuser', authcontroller.isLoggedIn, databasecontroller.deleteuser, (req, res) => {
-  return res.status(200).json(res.locals.message);
-});
+// tested x
 
-// tested x 
-
-// global error handler // does the router 
+// global error handler // does the router
 app.use((err, req, res, next) => {
-    const defaultErr = {
-      // log: 'Express error handler caught unknown middleware error',
-      log: err,
-      status: 500,
-      message: { err: 'An error occurred' },
-    };
-    const errorObj = Object.assign({}, defaultErr, err);
-    console.log(errorObj.log);
-    return res.status(errorObj.status).json(errorObj.message);
-  });
+  const defaultErr = {
+    // log: 'Express error handler caught unknown middleware error',
+    log: err,
+    status: 500,
+    message: { err: 'An error occurred' },
+  };
+  const errorObj = Object.assign({}, defaultErr, err);
+  console.log(errorObj.log);
+  return res.status(errorObj.status).json(errorObj.message);
+});
 
-  // tested x 
+// tested x
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

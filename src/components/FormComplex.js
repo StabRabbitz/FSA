@@ -33,7 +33,8 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
     };
     console.log('handle submit 2')
     fetch('http://localhost:3000/api/updateuser', {
-      method: 'POST',
+      method: 'PATCH',
+      credentials: "include",
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json',
