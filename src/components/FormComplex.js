@@ -29,7 +29,7 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
       medCost2: form.medCost2,
       medCost3: form.medCost3,
     };
-    fetch('api/updateuser', {
+    fetch('http://localhost:3000/api/updateuser', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -50,7 +50,7 @@ const FormComplex = ({serverResponse, setServerResponse}) => {
   return (
     <div className='mb-20'>
       <div className='flex justify-center mt-5'>
-        <form className="bg-white p-8 rounded shadow-md sm:w-5/12 ">
+        <form className="bg-white p-8 rounded shadow-md sm:w-5/12 " onSubmit={handleSubmit}>
           <label className="text-lg font-semibold text-gray-700">
             Name:
           </label>

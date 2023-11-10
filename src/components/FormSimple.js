@@ -44,7 +44,7 @@ const FormSimple = ( {serverResponse, setServerResponse} ) => {
     <div>
       <form className="bg-white p-8 rounded shadow-md w-full sm:w-96">
         <label className="text-lg font-semibold text-gray-700">
-          What were your average medical expenses in 2023?
+          What were your medical expenses in 2023?
         </label>
         <input
           type="number"
@@ -66,7 +66,7 @@ const FormSimple = ( {serverResponse, setServerResponse} ) => {
           onChange={handleChange}
         />
         <label className="text-lg font-semibold text-gray-700">
-          What were your average medical expenses in 2021?
+          What were your medical expenses in 2021?
         </label>
         <input
           type="number"

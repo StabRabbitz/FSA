@@ -52,10 +52,10 @@ apiRouter.patch('/updateuser', authcontroller.isLoggedIn, databasecontroller.upd
 });
 
 // ** John testing for authcontroller.isLoggedIn
-app.get('/isLoggedIn', authcontroller.isLoggedIn, (req, res) => res.sendStatus(200))
+app.get('/isloggedin', authcontroller.isLoggedIn, (req, res) => res.sendStatus(200))
 
 // auto-trigger this when userInfo is updated // updates widget
-apiRouter.get('/updatedQuote', (req, res) => {
+apiRouter.get('/updatedquote', (req, res) => {
 
 });
 
